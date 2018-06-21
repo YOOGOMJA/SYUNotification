@@ -1,0 +1,61 @@
+<html ng-app='popApp' lang='ko'>
+  <head>
+      <meta charset="utf-8">
+    <script type='text/javascript' src='./bower_components/jQuery/dist/jquery.min.js'></script>
+    <script type='text/javascript' src='./bower_components/angular/angular.min.js'></script>
+    <script type="text/javascript" src='./bower_components/bootstrap/dist/js/bootstrap.min.js'></script>
+
+    <Script type='text/javascript' src='./popup.js'></Script>
+
+    <link rel='stylesheet' href='./bower_components/bootstrap/dist/css/bootstrap.css'>
+
+    <link rel='stylesheet' href='./popup.css'/>
+  </head>
+  <body ng-controller='popCtrl'>
+      <div class="container">
+          <div class="card-deck ">
+            <div class="card box-shadow">
+              <div class="card-header">
+                <h4 class="my-0 font-weight-normal">
+                  SYU 공지사항
+                </h4>
+              </div>
+              <div class="card-body">
+                  <table class="table table-sm">
+                    <thead>
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col" style='width : 55%'>제목</th>
+                        <th scope="col">작성자</th>
+                        <th scope="col" style='width : 15%'>작성일</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr ng-repeat='item in mod.items' ng-class='{ "table-primary" : item.isNewItem , "table-warning" : item.isFixed }'>
+                        <th scope="row" ng-bind='item.seq > 0 ? item.seq : "공지"'></th>
+                        <td ng-bind='item.title'>제목</td>
+                        <td ng-bind='item.author'>작성자</td>
+                        <td ng-bind='item.date'>작성일</td>
+                      </tr>
+                      
+                    </tbody>
+                  </table>
+                <!-- <button type="button" class="btn btn-lg btn-block btn-outline-primary">Sign up for free</button> -->
+              </div>
+              <div class='card-footer text-center'>                
+                  <nav aria-label="Page navigation example">
+                      <ul class="pagination">
+                        <li class="page-item"><a class="page-link" href="#">Previous</a></li>
+                        <li class="page-item"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                      </ul>
+                    </nav>
+
+              </div>
+            </div>
+          </div>
+        </div>
+  </body>
+</html>
