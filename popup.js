@@ -1,8 +1,15 @@
-angular.module('popApp' , [])
+angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
 .controller('popCtrl' , ['$scope' , '$http' , function($s , $http){
     
     $s.mod = {
+        IDENTIFIERS : {
+            NOTICE : "NOTICE",
+            HISTORY : "HISTORY",
+            FAVORITE : 'FAVORITE'
+        },
         items : [],
+        history : [],
+        favorite : [],
         page : {
             current : 1,
             items : [],
@@ -10,7 +17,10 @@ angular.module('popApp' , [])
             pagecount : 5
         },
         loading : false,
-        last_updated_txt : ''
+        last_updated_txt : '',
+        nav : {
+            selected : 0
+        }
     }
 
     $s.fn = {
@@ -32,18 +42,34 @@ angular.module('popApp' , [])
                 chrome.runtime.sendMessage({ title : "GET_BOARD_ITEM" , page : page , forced : forced});
                 
                 chrome.storage.sync.get(['LAST_UPDATED'] , function(item){
-                    console.log(item);
                     if(item.LAST_UPDATED){
                         var _tmp = moment(item.LAST_UPDATED);
                         $s.mod.last_updated_txt = _tmp.fromNow();
-                        $s.$apply();
+                        $s.$digest();
                     }
                 });
             }
         },
         evt : {
+            nav : {
+                change : function(type){
+                    if(type == $s.mod.IDENTIFIERS.NOTICE){
+                        $s.mod.nav.selected = type;
+                    }
+                    else if(type == $s.mod.IDENTIFIERS.FAVORITE){
+                        $s.mod.nav.selected = type;
+                    }
+                    else if(type == $s.mod.IDENTIFIERS.HISTORY){
+                        $s.mod.nav.selected = type;
+                    }
+                }
+            },
             reload : function(){
                 $s.mod.page.current = 1;
+                $s.mod.page.items.splice(0);
+                for(var i= 1 ; i <= 5;i++){
+                    $s.mod.page.items.push(i);
+                }
                 $s.fn.load(1,true);
             },
             page : {
@@ -99,10 +125,13 @@ angular.module('popApp' , [])
                 }
             },
             openTab : function(item){
-                console.log(item);
+                $s.mod.history.push(item);
                 chrome.tabs.create({
                     url : item.location
                 });
+            },
+            store : function(item){
+                item.isStored = item.isStored ? false : true;
             }
         }
     }

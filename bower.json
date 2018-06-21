@@ -1,0 +1,24 @@
+{
+  "name": "syuNotification",
+  "homepage": "https://github.com/yoogomja/syunotification",
+  "authors": [
+    "KyeongSoo Yoo"
+  ],
+  "description": "ShamYook Univ Noti Boards",
+  "main": "",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "^1.7.2",
+    "bootstrap": "^4.1.1",
+    "jQuery": "^3.3.1",
+    "moment": "momentjs#^2.22.2",
+    "angular-material": "^1.1.9"
+  }
+}

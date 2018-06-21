@@ -1,137 +1,102 @@
 <html ng-app='popApp' lang='ko'>
   <head>
-      <meta charset="utf-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <script type='text/javascript' src='./bower_components/jQuery/dist/jquery.min.js'></script>
     <script type='text/javascript' src='./bower_components/angular/angular.min.js'></script>
-    <script type="text/javascript" src='./bower_components/bootstrap/dist/js/bootstrap.min.js'></script>
+    <script type="text/javascript" src="./bower_components/angular-animate/angular-animate.min.js"></script>
+    <script type="text/javascript" src='./bower_components/angular-aria/angular-aria.min.js'></script>
+    <script type='text/javascript' src='./bower_components/angular-messages/angular-messages.min.js'></script>
+    <script type='text/javascript' src='./bower_components/angular-material/angular-material.min.js'></script>
+    <!-- <script type="text/javascript" src='./bower_components/bootstrap/dist/js/bootstrap.min.js'></script> -->
     <script type="text/javascript" src='./bower_components/moment/min/moment-with-locales.js'></script>
 
     <Script type='text/javascript' src='./popup.js'></Script>
 
-    <link rel='stylesheet' href='./bower_components/bootstrap/dist/css/bootstrap.css'>
-
+    <!-- <link rel='stylesheet' href='./bower_components/bootstrap/dist/css/bootstrap.css'> -->
+    <link rel='stylesheet' href='./bower_components/angular-material/angular-material.css'/>
     <link rel='stylesheet' href='./popup.css'/>
   </head>
   <body ng-controller='popCtrl'>
-      <div class="container">
-          <div class="card-deck ">
-            <div class="card box-shadow">
-              <div class="card-header">
-                <h4 class="my-0 font-weight-normal">
-                  SYU 공지사항
-                  
-                </h4>
-                <p class='last-updated' ng-if="mod.last_updated_txt.length > 0">last updated : {{mod.last_updated_txt}}</p>
-                <button type='button' ng-click='fn.evt.reload()' class='btn btn-primary btn-sm'>새로 가져오기</button>
-              </div>
-              <table class='table table-sm' style='margin-bottom : 0;'>
-                <thead>
-                  <tr>
-                    <th scope="col text-center">#</th>
-                    <th scope="col" style='width : 50%'>제목</th>
-                    <th scope="col" style='text-align :center;'>작성자</th>
-                    <th scope="col text-center" style='width : 17%'>작성일</th>
-                  </tr>
-                </thead>
-              </table>
-              <div class="card-body">
-                  <div class='covered' ng-if='mod.loading'>
-                      <div class="lds-css ng-scope"><div style="width:100%;height:100%" class="lds-ripple"><div></div><div></div></div><style type="text/css">@keyframes lds-ripple {
-                        0% {
-                          top: 96px;
-                          left: 96px;
-                          width: 0;
-                          height: 0;
-                          opacity: 1;
-                        }
-                        100% {
-                          top: 18px;
-                          left: 18px;
-                          width: 156px;
-                          height: 156px;
-                          opacity: 0;
-                        }
-                      }
-                      @-webkit-keyframes lds-ripple {
-                        0% {
-                          top: 96px;
-                          left: 96px;
-                          width: 0;
-                          height: 0;
-                          opacity: 1;
-                        }
-                        100% {
-                          top: 18px;
-                          left: 18px;
-                          width: 156px;
-                          height: 156px;
-                          opacity: 0;
-                        }
-                      }
-                      .lds-ripple {
-                        position: relative;
-                        left:50%;
-                        margin-left:-100px;
-                        margin-top:100px;
-                      }
-                      .lds-ripple div {
-                        box-sizing: content-box;
-                        position: absolute;
-                        border-width: 4px;
-                        border-style: solid;
-                        opacity: 1;
-                        border-radius: 50%;
-                        -webkit-animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
-                        animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
-                      }
-                      .lds-ripple div:nth-child(1) {
-                        border-color: #93dbe9;
-                      }
-                      .lds-ripple div:nth-child(2) {
-                        border-color: #689cc5;
-                        -webkit-animation-delay: -0.5s;
-                        animation-delay: -0.5s;
-                      }
-                      .lds-ripple {
-                        width: 200px !important;
-                        height: 200px !important;
-                        -webkit-transform: translate(-100px, -100px) scale(1) translate(100px, 100px);
-                        transform: translate(-100px, -100px) scale(1) translate(100px, 100px);
-                      }
-                      </style></div>
-                  </div>
-                  <table class="table table-sm">
-                    <tbody>
-                      <tr ng-repeat='item in mod.items' ng-class='{ "table-primary" : item.isNewItem , "table-warning" : item.isFixed }'>
-                        <th scope="row" class='text-center' ng-bind='item.seq > 0 ? item.seq : "공지"'></th>
-                        <td style='width : 53%' class=''>
-                          <a href="javascript:" ng-bind='item.title' ng-click='fn.evt.openTab(item)'></a>
-                        </td>
-                        <td ng-bind='item.author' class='text-center'>작성자</td>
-                        <td ng-bind='item.date | frmDate' class='text-center' style='width : 17%'>작성일</td>
-                      </tr>
-                      
-                    </tbody>
-                  </table>
-                <!-- <button type="button" class="btn btn-lg btn-block btn-outline-primary">Sign up for free</button> -->
-              </div>
-              <div class='card-footer text-center'>                
-                  <nav aria-label="Page navigation example">
-                      <ul class="pagination">
-                        <li class="page-item">
-                          <a class="page-link" ng-click='fn.evt.page.prev()' href="javascript:">Previous</a></li>
-                        <li class="page-item" ng-repeat='item in mod.page.items' ng-class='{ active : item === mod.page.current }'>
-                          <a class="page-link" ng-click='fn.evt.page.go(item)' href="javascript:" ng-bind='item'></a>
-                        </li>                        
-                        <li class="page-item">
-                          <a class="page-link" ng-click='fn.evt.page.next()' href="javascript:">Next</a>
-                        </li>
-                      </ul>
-                    </nav>
-
-              </div>
-            </div>
-          </div>
+      <md-toolbar md-scroll-shrink class='md-toolbar-header'>
+        <div class="md-toolbar-tools">
+          <p class='md-headline'>SYU 학사 공지</p>
+          <p flex class='md-subhead' >
+            last updated : {{mod.last_updated_txt}}
+          </p>
+          <md-button class="md-raised md-accent md-hue-3" aria-label="Learn More" ng-click='fn.evt.reload()'>Refresh</md-button>
         </div>
+        
+      </md-toolbar>
+      <md-content flex>
+          <!-- <md-nav-bar
+          md-selected-nav-item="mod.nav.selected"
+          nav-bar-aria-label="navigation links">
+          <md-nav-item md-nav-click="fn.evt.nav.change(mod.IDENTIFIERS.NOTICE)" name="NOTICE">
+            Notice
+          </md-nav-item>
+          <md-nav-item md-nav-click="fn.evt.nav.change(mod.IDENTIFIERS.HISTORY)" name="HISTORY">
+            History
+          </md-nav-item>
+          <md-nav-item md-nav-click="fn.evt.nav.change(mod.IDENTIFIERS.FAVORITE)" name="FAVORITE">
+            Favorite
+          </md-nav-item>
+        </md-nav-bar> -->
+        <md-tabs md-selected="mod.nav.selected" md-border-bottom md-autoselect md-swipe-content>
+          <md-tab label="NOTICE" ng-value="NOTICE">
+            <md-content flex class='list'>
+                <md-list flex class='md-dense'>
+                    <md-list-item class='md-2-line' ng-repeat="item in mod.items" ng-click='fn.evt.openTab(item)' ng-class='{ "row-notice" : item.isFixed , "row-new" : !item.isFixed && item.isNewItem  }' ng-mouseover="item.isFocused = true" ng-mouseleave="item.isFocused = false" ng-init="item.isFocused">
+                        <div class="md-list-item-text">
+                            <div ng-class='{ "col-notice" : item.isFixed , "col-new" : !item.isFixed && item.isNewItem  }'></div>
+                          <h3><b>{{ item.title }}</b></h3>
+                          <h4>{{ item.author }}</h4>
+                          <p>{{ item.date }}</p>
+                          <md-button class="md-icon-button fade" aria-label="Favorite" ng-show='item.isFocused' ng-click='fn.evt.store(item)' ng-if="item.isFocused">
+                            <md-icon md-svg-icon="./assets/icons/favorite.svg" class="favorite-icon" ng-class='{ "selected" : item.isStored }'></md-icon>
+                          </md-button>
+                        </div>
+                    </md-list-item>
+                  </md-list>      
+            </md-content>
+          </md-tab>
+          <md-tab label="HISTORY" ng-value="HISTORY">
+              <md-content flex class='list'>
+                  <md-list flex class='md-dense'>
+                      <md-list-item class='md-2-line' ng-repeat="item in mod.history" ng-click='fn.evt.openTab(item)' ng-class='{ "row-notice" : item.isFixed , "row-new" : !item.isFixed && item.isNewItem  }' ng-mouseover="item.isFocused = true" ng-mouseleave="item.isFocused = false" ng-init="item.isFocused">
+                          <div class="md-list-item-text">
+                              <div ng-class='{ "col-notice" : item.isFixed , "col-new" : !item.isFixed && item.isNewItem  }'></div>
+                            <h3><b>{{ item.title }}</b></h3>
+                            <h4>{{ item.author }}</h4>
+                            <p>{{ item.date }}</p>
+                            <md-button class="md-icon-button fade" aria-label="Favorite" ng-show='item.isFocused' ng-click='fn.evt.store(item)' ng-if="item.isFocused">
+                              <md-icon md-svg-icon="./assets/icons/favorite.svg" class="favorite-icon" ng-class='{ "selected" : item.isStored }'></md-icon>
+                            </md-button>
+                          </div>
+                      </md-list-item>
+                    </md-list>      
+              </md-content>
+              
+            </md-tab>
+            <md-tab label="FAVORITE" ng-value="FAVORITE">
+                <md-content flex class='list'>
+                    <md-list flex class='md-dense'>
+                        <md-list-item class='md-2-line' ng-repeat="item in mod.favorite" ng-click='fn.evt.openTab(item)' ng-class='{ "row-notice" : item.isFixed , "row-new" : !item.isFixed && item.isNewItem  }' ng-mouseover="item.isFocused = true" ng-mouseleave="item.isFocused = false" ng-init="item.isFocused">
+                            <div class="md-list-item-text">
+                                <div ng-class='{ "col-notice" : item.isFixed , "col-new" : !item.isFixed && item.isNewItem  }'></div>
+                              <h3><b>{{ item.title }}</b></h3>
+                              <h4>{{ item.author }}</h4>
+                              <p>{{ item.date }}</p>
+                              <md-button class="md-icon-button fade" aria-label="Favorite" ng-show='item.isFocused' ng-click='fn.evt.store(item)' ng-if="item.isFocused">
+                                <md-icon md-svg-icon="./assets/icons/favorite.svg" class="favorite-icon" ng-class='{ "selected" : item.isStored }'></md-icon>
+                              </md-button>
+                            </div>
+                        </md-list-item>
+                      </md-list>      
+                </md-content>
+                
+              </md-tab>
+        </md-tabs>
+      </md-content>
   </body>
 </html>
