@@ -4,6 +4,7 @@
     <script type='text/javascript' src='./bower_components/jQuery/dist/jquery.min.js'></script>
     <script type='text/javascript' src='./bower_components/angular/angular.min.js'></script>
     <script type="text/javascript" src='./bower_components/bootstrap/dist/js/bootstrap.min.js'></script>
+    <script type="text/javascript" src='./bower_components/moment/min/moment-with-locales.js'></script>
 
     <Script type='text/javascript' src='./popup.js'></Script>
 
@@ -18,24 +19,96 @@
               <div class="card-header">
                 <h4 class="my-0 font-weight-normal">
                   SYU 공지사항
+                  
                 </h4>
+                <p class='last-updated' ng-if="mod.last_updated_txt.length > 0">last updated : {{mod.last_updated_txt}}</p>
+                <button type='button' ng-click='fn.evt.reload()' class='btn btn-primary btn-sm'>새로 가져오기</button>
               </div>
+              <table class='table table-sm' style='margin-bottom : 0;'>
+                <thead>
+                  <tr>
+                    <th scope="col text-center">#</th>
+                    <th scope="col" style='width : 50%'>제목</th>
+                    <th scope="col" style='text-align :center;'>작성자</th>
+                    <th scope="col text-center" style='width : 17%'>작성일</th>
+                  </tr>
+                </thead>
+              </table>
               <div class="card-body">
+                  <div class='covered' ng-if='mod.loading'>
+                      <div class="lds-css ng-scope"><div style="width:100%;height:100%" class="lds-ripple"><div></div><div></div></div><style type="text/css">@keyframes lds-ripple {
+                        0% {
+                          top: 96px;
+                          left: 96px;
+                          width: 0;
+                          height: 0;
+                          opacity: 1;
+                        }
+                        100% {
+                          top: 18px;
+                          left: 18px;
+                          width: 156px;
+                          height: 156px;
+                          opacity: 0;
+                        }
+                      }
+                      @-webkit-keyframes lds-ripple {
+                        0% {
+                          top: 96px;
+                          left: 96px;
+                          width: 0;
+                          height: 0;
+                          opacity: 1;
+                        }
+                        100% {
+                          top: 18px;
+                          left: 18px;
+                          width: 156px;
+                          height: 156px;
+                          opacity: 0;
+                        }
+                      }
+                      .lds-ripple {
+                        position: relative;
+                        left:50%;
+                        margin-left:-100px;
+                        margin-top:100px;
+                      }
+                      .lds-ripple div {
+                        box-sizing: content-box;
+                        position: absolute;
+                        border-width: 4px;
+                        border-style: solid;
+                        opacity: 1;
+                        border-radius: 50%;
+                        -webkit-animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+                        animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+                      }
+                      .lds-ripple div:nth-child(1) {
+                        border-color: #93dbe9;
+                      }
+                      .lds-ripple div:nth-child(2) {
+                        border-color: #689cc5;
+                        -webkit-animation-delay: -0.5s;
+                        animation-delay: -0.5s;
+                      }
+                      .lds-ripple {
+                        width: 200px !important;
+                        height: 200px !important;
+                        -webkit-transform: translate(-100px, -100px) scale(1) translate(100px, 100px);
+                        transform: translate(-100px, -100px) scale(1) translate(100px, 100px);
+                      }
+                      </style></div>
+                  </div>
                   <table class="table table-sm">
-                    <thead>
-                      <tr>
-                        <th scope="col">#</th>
-                        <th scope="col" style='width : 55%'>제목</th>
-                        <th scope="col">작성자</th>
-                        <th scope="col" style='width : 15%'>작성일</th>
-                      </tr>
-                    </thead>
                     <tbody>
                       <tr ng-repeat='item in mod.items' ng-class='{ "table-primary" : item.isNewItem , "table-warning" : item.isFixed }'>
-                        <th scope="row" ng-bind='item.seq > 0 ? item.seq : "공지"'></th>
-                        <td ng-bind='item.title'>제목</td>
-                        <td ng-bind='item.author'>작성자</td>
-                        <td ng-bind='item.date'>작성일</td>
+                        <th scope="row" class='text-center' ng-bind='item.seq > 0 ? item.seq : "공지"'></th>
+                        <td style='width : 53%' class=''>
+                          <a href="javascript:" ng-bind='item.title' ng-click='fn.evt.openTab(item)'></a>
+                        </td>
+                        <td ng-bind='item.author' class='text-center'>작성자</td>
+                        <td ng-bind='item.date | frmDate' class='text-center' style='width : 17%'>작성일</td>
                       </tr>
                       
                     </tbody>
@@ -45,11 +118,14 @@
               <div class='card-footer text-center'>                
                   <nav aria-label="Page navigation example">
                       <ul class="pagination">
-                        <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-                        <li class="page-item"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                        <li class="page-item">
+                          <a class="page-link" ng-click='fn.evt.page.prev()' href="javascript:">Previous</a></li>
+                        <li class="page-item" ng-repeat='item in mod.page.items' ng-class='{ active : item === mod.page.current }'>
+                          <a class="page-link" ng-click='fn.evt.page.go(item)' href="javascript:" ng-bind='item'></a>
+                        </li>                        
+                        <li class="page-item">
+                          <a class="page-link" ng-click='fn.evt.page.next()' href="javascript:">Next</a>
+                        </li>
                       </ul>
                     </nav>
 
