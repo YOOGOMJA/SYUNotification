@@ -18,6 +18,7 @@
     <link rel='stylesheet' href='./popup.css'/>
   </head>
   <body ng-controller='popCtrl'>
+      <!-- Header -->
       <md-toolbar md-scroll-shrink class='md-toolbar-header'>
         <div class="md-toolbar-tools">
           <p class='md-headline'>SYU 학사 공지</p>
@@ -26,22 +27,12 @@
           </p>
           <md-button class="md-raised md-accent md-hue-3" aria-label="Learn More" ng-click='fn.evt.reload()'>Refresh</md-button>
         </div>
-        
       </md-toolbar>
-      <md-content flex>
-          <!-- <md-nav-bar
-          md-selected-nav-item="mod.nav.selected"
-          nav-bar-aria-label="navigation links">
-          <md-nav-item md-nav-click="fn.evt.nav.change(mod.IDENTIFIERS.NOTICE)" name="NOTICE">
-            Notice
-          </md-nav-item>
-          <md-nav-item md-nav-click="fn.evt.nav.change(mod.IDENTIFIERS.HISTORY)" name="HISTORY">
-            History
-          </md-nav-item>
-          <md-nav-item md-nav-click="fn.evt.nav.change(mod.IDENTIFIERS.FAVORITE)" name="FAVORITE">
-            Favorite
-          </md-nav-item>
-        </md-nav-bar> -->
+      <!-- Header -->
+      <md-content flex class='content'>
+        <div class='cover' ng-if="mod.state.loading">
+            <md-progress-circular ng-disabled="false" md-diameter="96"></md-progress-circular>
+        </div>
         <md-tabs md-selected="mod.nav.selected" md-border-bottom md-autoselect md-swipe-content>
           <md-tab label="NOTICE" ng-value="NOTICE">
             <md-content flex class='list'>
@@ -52,26 +43,67 @@
                           <h3><b>{{ item.title }}</b></h3>
                           <h4>{{ item.author }}</h4>
                           <p>{{ item.date }}</p>
-                          <md-button class="md-icon-button fade" aria-label="Favorite" ng-show='item.isFocused' ng-click='fn.evt.store(item)' ng-if="item.isFocused">
-                            <md-icon md-svg-icon="./assets/icons/favorite.svg" class="favorite-icon" ng-class='{ "selected" : item.isStored }'></md-icon>
+                          <md-button class="md-icon-button fade" aria-label="Favorite" ng-show='item.isFocused' ng-click='fn.evt.fav.add(item)' ng-if="item.isFocused">
+                            <!-- <md-icon md-svg-icon="./assets/icons/favorite.svg" class="favorite-icon " ng-class='{ "selected" : item.isStored }'></md-icon> -->
+                            <md-icon md-svg-icon="./assets/icons/favorite.svg" class="favorite-icon selected" ></md-icon>
                           </md-button>
                         </div>
                     </md-list-item>
                   </md-list>      
             </md-content>
+            <section layout="row" class='bottom-container' layout-sm="column" layout-align="center center" layout-wrap>
+              <!-- change state to search -->
+              <md-content class='pagination' ng-if='!mod.state.isSearchMode'>
+                  <md-button class='md-icon-button' ng-click='fn.evt.setFooterState("SEARCH")'>
+                      <md-icon md-svg-icon="./assets/icons/search.svg"></md-icon>
+                  </md-button>  
+                  <md-button class='btn-pagination' ng-click='fn.evt.page.prev()'>
+                      <md-icon md-svg-icon="./assets/icons/left-arrow.svg"></md-icon>
+                    </md-button>
+                    <md-button class='btn-pagination' ng-repeat='item in mod.page.items' ng-click='fn.evt.page.go(item)' ng-class='{ "md-raised md-hue-3 md-accent" : item === mod.page.current }'>
+                      {{item}}
+                    </md-button>
+                    <md-button class='btn-pagination' ng-click='fn.evt.page.next();'>
+                        <md-icon md-svg-icon="./assets/icons/right-arrow.svg"></md-icon>
+                    </md-button>
+              </md-content>
+              <md-content class='search' ng-if='mod.state.isSearchMode'>
+                  <div layout-gt-xs="row">
+                    <md-input-container class='' flex-gt-xs>
+                        <label>Type</label>
+                        <md-select ng-model="mod.search.type" ng-disabled="mod.state.searched">
+                          <md-option ng-repeat="item in mod.search.types" value="{{item.val}}">
+                            {{item.desc}}
+                          </md-option>
+                        </md-select>
+                      </md-input-container>
+                    <md-input-container class='keyword' flex-gt-xs>
+                        <label>Keyword</label>
+                        <input ng-model="mod.search.keyword" ng-disabled="mod.state.searched" >
+                    </md-input-container>
+                    <md-button class='md-raised md-primary' ng-click='fn.evt.search.get()' ng-if="!mod.state.searched">
+                      검색
+                    </md-button>
+                    <md-button class='md-raised md-accent md-hue-3' ng-click='fn.evt.search.init()' ng-if='mod.state.searched'>
+                      검색 취소
+                    </md-button>
+                    <md-button class='btn-pagination btn-search-close' ng-click='fn.evt.setFooterState("PAGINATION")'>
+                        <md-icon md-svg-icon="./assets/icons/cancel.svg"></md-icon>
+                    </md-button>
+                  </div>
+              </md-content>
+            </section>
+              
           </md-tab>
           <md-tab label="HISTORY" ng-value="HISTORY">
-              <md-content flex class='list'>
+              <md-content flex class='list not-notice'>
                   <md-list flex class='md-dense'>
-                      <md-list-item class='md-2-line' ng-repeat="item in mod.history" ng-click='fn.evt.openTab(item)' ng-class='{ "row-notice" : item.isFixed , "row-new" : !item.isFixed && item.isNewItem  }' ng-mouseover="item.isFocused = true" ng-mouseleave="item.isFocused = false" ng-init="item.isFocused">
+                      <md-list-item class='md-2-line' ng-repeat="item in mod.histories track by $index" ng-click='fn.evt.openTab(item)' ng-class='{ "row-notice" : item.isFixed , "row-new" : !item.isFixed && item.isNewItem  }' ng-mouseover="item.isFocused = true" ng-mouseleave="item.isFocused = false" ng-init="item.isFocused">
                           <div class="md-list-item-text">
                               <div ng-class='{ "col-notice" : item.isFixed , "col-new" : !item.isFixed && item.isNewItem  }'></div>
                             <h3><b>{{ item.title }}</b></h3>
                             <h4>{{ item.author }}</h4>
                             <p>{{ item.date }}</p>
-                            <md-button class="md-icon-button fade" aria-label="Favorite" ng-show='item.isFocused' ng-click='fn.evt.store(item)' ng-if="item.isFocused">
-                              <md-icon md-svg-icon="./assets/icons/favorite.svg" class="favorite-icon" ng-class='{ "selected" : item.isStored }'></md-icon>
-                            </md-button>
                           </div>
                       </md-list-item>
                     </md-list>      
@@ -79,16 +111,16 @@
               
             </md-tab>
             <md-tab label="FAVORITE" ng-value="FAVORITE">
-                <md-content flex class='list'>
+                <md-content flex class='list not-notice'>
                     <md-list flex class='md-dense'>
-                        <md-list-item class='md-2-line' ng-repeat="item in mod.favorite" ng-click='fn.evt.openTab(item)' ng-class='{ "row-notice" : item.isFixed , "row-new" : !item.isFixed && item.isNewItem  }' ng-mouseover="item.isFocused = true" ng-mouseleave="item.isFocused = false" ng-init="item.isFocused">
+                        <md-list-item class='md-2-line' ng-repeat="item in mod.favorites" ng-click='fn.evt.openTab(item)' ng-class='{ "row-notice" : item.isFixed , "row-new" : !item.isFixed && item.isNewItem  }' ng-mouseover="item.isFocused = true" ng-mouseleave="item.isFocused = false" ng-init="item.isFocused">
                             <div class="md-list-item-text">
                                 <div ng-class='{ "col-notice" : item.isFixed , "col-new" : !item.isFixed && item.isNewItem  }'></div>
                               <h3><b>{{ item.title }}</b></h3>
                               <h4>{{ item.author }}</h4>
                               <p>{{ item.date }}</p>
-                              <md-button class="md-icon-button fade" aria-label="Favorite" ng-show='item.isFocused' ng-click='fn.evt.store(item)' ng-if="item.isFocused">
-                                <md-icon md-svg-icon="./assets/icons/favorite.svg" class="favorite-icon" ng-class='{ "selected" : item.isStored }'></md-icon>
+                              <md-button class="md-icon-button fade" aria-label="Favorite" ng-show='item.isFocused' ng-click='fn.evt.fav.del(item.contentId)' ng-if="item.isFocused">
+                                <md-icon md-svg-icon="./assets/icons/favorite.svg" class="favorite-icon selected"></md-icon>
                               </md-button>
                             </div>
                         </md-list-item>
@@ -97,6 +129,7 @@
                 
               </md-tab>
         </md-tabs>
+        
       </md-content>
   </body>
 </html>
