@@ -4,6 +4,15 @@
 ## Description
 삼육대학교 공지 뷰어 입니다. 
 
+## Installation
+
+크롬 확장 프로그램 스토어에는 아직 등록되어있지 않습니다.
+직접 추가 하여 사용하는 경우 bower가 필요합니다. 
+
+<pre>
+  bower install -- 필요한 스크립트들을 설치합니다.
+</pre>
+
 ## 1. 예제
 
 ![Alt text](https://github.com/YOOGOMJA/SYUNotification/blob/material/syunoti_demo.gif?raw=true "사용예제")
