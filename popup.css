@@ -2,7 +2,7 @@ body{
     padding : 0;
     margin:0;
     width : 450px;
-    height: 562px!important;
+    height: 600px!important;
 }
 
 .md-toolbar-header {
@@ -30,13 +30,13 @@ md-tab-item{
 }
 
 .list{
-    height : 400px;
+    height : 435px;
     overflow-y : auto;
     padding:0;
 }
 
 .list.not-notice{
-    height : 457px;
+    height : 490px;
 }
 
 .list md-list{
@@ -108,10 +108,12 @@ md-nav-ink-bar{
 .fade.ng-leave.ng-leave-active {
     opacity:0;
 }
+md-tabs[md-border-bottom]:not(.md-dynamic-height) md-tabs-content-wrapper{
+    height: 500px;
+}
 
 md-tabs:not(.md-no-tab-content):not(.md-dynamic-height){
-    height : 506px;
-
+    height : 540px;
 }
 
 .cover{
@@ -130,7 +132,7 @@ md-tabs:not(.md-no-tab-content):not(.md-dynamic-height){
 }
 
 .content {
-    min-height : 500px;
+    min-height : 570px;
 }
 
 .bottom-container{

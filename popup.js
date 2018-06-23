@@ -79,16 +79,18 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
                     $s.$apply();
                 }
                 else if(mesg.title == 'GET_LAST_UPDATED'){
-                    if(item.data){
+                    if(mesg.data){
                         console.log('Jello')
-                        var _tmp = moment(item.data);
+                        var _tmp = moment(mesg.data);
                         $s.mod.last_updated_txt = _tmp.fromNow();
                         $s.$apply();
                     }
                 }
             });
 
-            
+            chrome.runtime.sendMessage({
+                title : 'GET_LAST_UPDATED'
+            });
 
             $s.fn.evt.search.init();
             // $s.fn.load(1 , false);
@@ -96,19 +98,21 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
         load : function(page, forced){
             if(!$s.mod.state.loading){
                 $s.mod.state.loading = true;
-                chrome.runtime.sendMessage({ title : "GET_BOARD_ITEM" , page : page , forced : forced});
-                
-                chrome.storage.sync.get(['LAST_UPDATED'] , function(item){
-                    if(item.LAST_UPDATED){
-                        console.log('Jello')
-                        var _tmp = moment(item.LAST_UPDATED);
-                        $s.mod.last_updated_txt = _tmp.fromNow();
-                        $s.$apply();
-                    }
+                chrome.runtime.sendMessage({ title : "GET_BOARD_ITEM" , page : page , forced : forced}, function(){
+                    
                 });
-                // chrome.runtime.sendMessage({
-                //     title : 'GET_LAST_UPDATED'
+                
+                // chrome.storage.sync.get(['LAST_UPDATED'] , function(item){
+                //     if(item.LAST_UPDATED){
+                //         console.log('Jello')
+                //         var _tmp = moment(item.LAST_UPDATED);
+                //         $s.mod.last_updated_txt = _tmp.fromNow();
+                //         $s.$apply();
+                //     }
                 // });
+                chrome.runtime.sendMessage({
+                    title : 'GET_LAST_UPDATED'
+                });
             }
         },
         evt : {
@@ -188,6 +192,7 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
             },
             fav : {
                 add : function(item){
+                    item.isFocused = false;
                     chrome.runtime.sendMessage({
                         title : 'SET_FAVORITE_ITEM',
                         item : item

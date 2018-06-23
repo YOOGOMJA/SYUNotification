@@ -42,6 +42,7 @@ var _BACKGROUND = _BACKGROUND || {
     items : [],
     histories : [],
     favorites :[],
+    last_updated : (new Date()).getTime(),
     fetch : function(raw){
         var parsed_doc = jQuery(raw);
         var parsed_listInfo = parsed_doc.find('.list-info').text();
@@ -99,7 +100,10 @@ var _BACKGROUND = _BACKGROUND || {
             var _fetched = _BACKGROUND.fetch(d);
             _BACKGROUND.items = _fetched;
 
-            chrome.storage.sync.set({'LAST_UPDATED' : (new Date()).getTime()});
+            var _now = (new Date()).getTime();
+            chrome.storage.sync.set({'LAST_UPDATED' :_now}, function(){
+                _BACKGROUND.last_updated = _now;
+            });
         });
     }
 }
@@ -107,6 +111,7 @@ var _BACKGROUND = _BACKGROUND || {
 chrome.runtime.onInstalled.addListener(function() {
     chrome.storage.sync.get(['LAST_UPDATED'] , function(item){
         console.log(item);
+        _BACKGROUND.last_updated = item.LAST_UPDATED;
     })
     _BACKGROUND.load(1);
 });
@@ -131,9 +136,9 @@ chrome.runtime.onMessage.addListener(function(mesg, sender , sendResponse){
         }
     }
     else if(mesg.title === _BACKGROUND.IDENTIFIERS.MESG.GET_LAST_UPDATED){
-        console.log('GET_LAST_UPDATED')
+        console.log('GETLASTUPDATED')
         chrome.storage.sync.get(['LAST_UPDATED'] , function(items){
-            console.log('GET_LAST_UPDATED hi');
+            _BACKGROUND.last_updated = items.LAST_UPDATED ? items.LAST_UPDATED : (new Date()).getTime();
             chrome.runtime.sendMessage({
                 title : _BACKGROUND.IDENTIFIERS.MESG.GET_LAST_UPDATED,
                 data : items.LAST_UPDATED
@@ -248,7 +253,7 @@ chrome.runtime.onMessage.addListener(function(mesg, sender , sendResponse){
     }
     else if(mesg.title == _BACKGROUND.IDENTIFIERS.MESG.GET_FAVORITE_ITEM){
         chrome.storage.sync.get(['FAVORITE_ITEMS'] , function(item){
-            _BACKGROUND.favorites = item.FAVORITE_ITEMS;
+            _BACKGROUND.favorites = item.FAVORITE_ITEMS ? item.FAVORITE_ITEMS : [];
             chrome.runtime.sendMessage({
                 title : _BACKGROUND.IDENTIFIERS.MESG.GET_FAVORITE_ITEM,
                 items : _BACKGROUND.favorites
@@ -274,5 +279,8 @@ chrome.runtime.onMessage.addListener(function(mesg, sender , sendResponse){
                 });
             });
         });
+    }
+    else{
+        console.log("ERR" , mesg);
     }
 })

@@ -43,7 +43,7 @@
                           <h3><b>{{ item.title }}</b></h3>
                           <h4>{{ item.author }}</h4>
                           <p>{{ item.date }}</p>
-                          <md-button class="md-icon-button fade" aria-label="Favorite" ng-show='item.isFocused' ng-click='fn.evt.fav.add(item)' ng-if="item.isFocused">
+                          <md-button class="md-icon-button fade" aria-label="Favorite" ng-click='fn.evt.fav.add(item)' ng-if="item.isFocused">
                             <!-- <md-icon md-svg-icon="./assets/icons/favorite.svg" class="favorite-icon " ng-class='{ "selected" : item.isStored }'></md-icon> -->
                             <md-icon md-svg-icon="./assets/icons/favorite.svg" class="favorite-icon selected" ></md-icon>
                           </md-button>
@@ -113,13 +113,13 @@
             <md-tab label="FAVORITE" ng-value="FAVORITE">
                 <md-content flex class='list not-notice'>
                     <md-list flex class='md-dense'>
-                        <md-list-item class='md-2-line' ng-repeat="item in mod.favorites" ng-click='fn.evt.openTab(item)' ng-class='{ "row-notice" : item.isFixed , "row-new" : !item.isFixed && item.isNewItem  }' ng-mouseover="item.isFocused = true" ng-mouseleave="item.isFocused = false" ng-init="item.isFocused">
+                        <md-list-item class='md-2-line' ng-repeat="item in mod.favorites" ng-click='fn.evt.openTab(item)' ng-class='{ "row-notice" : item.isFixed , "row-new" : !item.isFixed && item.isNewItem  }' ng-mouseover="item.isFocused = true" ng-mouseleave="item.isFocused = false" ng-init="item.isFocused = false">
                             <div class="md-list-item-text">
                                 <div ng-class='{ "col-notice" : item.isFixed , "col-new" : !item.isFixed && item.isNewItem  }'></div>
                               <h3><b>{{ item.title }}</b></h3>
                               <h4>{{ item.author }}</h4>
                               <p>{{ item.date }}</p>
-                              <md-button class="md-icon-button fade" aria-label="Favorite" ng-show='item.isFocused' ng-click='fn.evt.fav.del(item.contentId)' ng-if="item.isFocused">
+                              <md-button class="md-icon-button fade" aria-label="Favorite" ng-if='item.isFocused' ng-click='fn.evt.fav.del(item.contentId)' >
                                 <md-icon md-svg-icon="./assets/icons/favorite.svg" class="favorite-icon selected"></md-icon>
                               </md-button>
                             </div>
