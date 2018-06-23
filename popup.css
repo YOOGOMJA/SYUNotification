@@ -2,7 +2,7 @@ body{
     padding : 0;
     margin:0;
     width : 450px;
-    height: 600px!important;
+    height: 599px!important;
 }
 
 .md-toolbar-header {
@@ -30,13 +30,13 @@ md-tab-item{
 }
 
 .list{
-    height : 435px;
+    height : 414px;
     overflow-y : auto;
     padding:0;
 }
 
 .list.not-notice{
-    height : 490px;
+    height : 470px;
 }
 
 .list md-list{
@@ -109,11 +109,11 @@ md-nav-ink-bar{
     opacity:0;
 }
 md-tabs[md-border-bottom]:not(.md-dynamic-height) md-tabs-content-wrapper{
-    height: 500px;
+    height: 470px;
 }
 
 md-tabs:not(.md-no-tab-content):not(.md-dynamic-height){
-    height : 540px;
+    height : 520px;
 }
 
 .cover{
@@ -168,4 +168,23 @@ md-input-container{
 
 md-input-container.keyword{
     width : 180px;
+}
+
+.empty{
+    width: 100%;
+    background: rgb(47, 46, 46);
+    top: 0;
+    position: absolute;
+    height: 490px;
+    color: #fff;
+    text-align: center;
+}
+.empty h2{
+    margin-top:45%;
+}
+
+.footer{
+    width: 100%;
+    height: 20px!important;
+    /* background-color:red; */
 }

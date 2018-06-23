@@ -252,7 +252,17 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
             search : {
                 get : function(){
                     if($s.mod.search.keyword.trim() === ""){
-                        alert('검색어를 입력해주세요');
+                        // alert('검색어를 입력해주세요');
+                        $mdDialog.show(
+                            $mdDialog
+                            .alert()
+                            .parent(angular.element(document.querySelector('.content')))
+                            .clickOutsideToClose(true)
+                            .title('검색 알림')
+                            .textContent('검색어를 입력해주세요')
+                            .ariaLabel('검색 알림')
+                            .ok('알겠어요')
+                        );
                         return ;
                     }
                     else{

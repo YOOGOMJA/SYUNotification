@@ -97,7 +97,15 @@
           </md-tab>
           <md-tab label="HISTORY" ng-value="HISTORY">
               <md-content flex class='list not-notice'>
-                  <md-list flex class='md-dense'>
+                  <div class='empty' ng-if='mod.histories.length <= 0'>
+                    <h2>
+                      아직 사용 이력이 없습니다.
+                    </h2>
+                    <h4>
+                      학사 공지를 클릭하시면 자동으로 생성됩니다.
+                    </h4>
+                  </div>
+                  <md-list flex class='md-dense' ng-if="mod.histories.length > 0">
                       <md-list-item class='md-2-line' ng-repeat="item in mod.histories track by $index" ng-click='fn.evt.openTab(item)' ng-class='{ "row-notice" : item.isFixed , "row-new" : !item.isFixed && item.isNewItem  }' ng-mouseover="item.isFocused = true" ng-mouseleave="item.isFocused = false" ng-init="item.isFocused">
                           <div class="md-list-item-text">
                               <div ng-class='{ "col-notice" : item.isFixed , "col-new" : !item.isFixed && item.isNewItem  }'></div>
@@ -112,7 +120,15 @@
             </md-tab>
             <md-tab label="FAVORITE" ng-value="FAVORITE">
                 <md-content flex class='list not-notice'>
-                    <md-list flex class='md-dense'>
+                    <div class='empty' ng-if='mod.favorites.length <= 0'>
+                      <h2>
+                        아직 즐겨 찾기가 없습니다.
+                      </h2>
+                      <h4>
+                        학사 공지 목록에서 추가할 수 있습니다.
+                      </h4>
+                    </div>
+                    <md-list flex class='md-dense' ng-if="mod.favorites.length > 0">
                         <md-list-item class='md-2-line' ng-repeat="item in mod.favorites" ng-click='fn.evt.openTab(item)' ng-class='{ "row-notice" : item.isFixed , "row-new" : !item.isFixed && item.isNewItem  }' ng-mouseover="item.isFocused = true" ng-mouseleave="item.isFocused = false" ng-init="item.isFocused = false">
                             <div class="md-list-item-text">
                                 <div ng-class='{ "col-notice" : item.isFixed , "col-new" : !item.isFixed && item.isNewItem  }'></div>
@@ -126,10 +142,14 @@
                         </md-list-item>
                       </md-list>      
                 </md-content>
-                
               </md-tab>
         </md-tabs>
-        
+        <section class='footer' layout="row"  layout-sm="column" layout-align="center center" layout-wrap>
+            <h5>
+                Copyright (c) 2018 YOOGOMJA MIT LICENCE. https://github.com/YOOGOMJA/syunotification
+            </h5>
+          </section>
       </md-content>
+      
   </body>
 </html>
