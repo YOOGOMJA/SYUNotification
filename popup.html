@@ -39,7 +39,7 @@
                 <md-list flex class='md-dense'>
                     <md-list-item class='md-2-line' ng-repeat="item in mod.items" ng-click='fn.evt.openTab(item)' ng-class='{ "row-notice" : item.isFixed , "row-new" : !item.isFixed && item.isNewItem  }' ng-mouseover="item.isFocused = true" ng-mouseleave="item.isFocused = false" ng-init="item.isFocused">
                         <div class="md-list-item-text">
-                            <div ng-class='{ "col-notice" : item.isFixed , "col-new" : !item.isFixed && item.isNewItem  }'></div>
+                            <div ng-class='{ "col-notice" : item.isNotice , "col-new" : !item.isNotice && item.isNew  }'></div>
                           <h3><b>{{ item.title }}</b></h3>
                           <h4>{{ item.author }}</h4>
                           <p>{{ item.date }}</p>
@@ -60,8 +60,8 @@
                   <md-button class='btn-pagination' ng-click='fn.evt.page.prev()'>
                       <md-icon md-svg-icon="./assets/icons/left-arrow.svg"></md-icon>
                     </md-button>
-                    <md-button class='btn-pagination' ng-repeat='item in mod.page.items' ng-click='fn.evt.page.go(item)' ng-class='{ "md-raised md-hue-3 md-accent" : item === mod.page.current }'>
-                      {{item}}
+                    <md-button class='btn-pagination' ng-repeat='item in mod.page.items' ng-click='fn.evt.page.go(item.val)' ng-class='{ "md-raised md-hue-3 md-accent" : item.selected }'>
+                      {{item.val}}
                     </md-button>
                     <md-button class='btn-pagination' ng-click='fn.evt.page.next();'>
                         <md-icon md-svg-icon="./assets/icons/right-arrow.svg"></md-icon>
@@ -70,13 +70,21 @@
               <md-content class='search' ng-if='mod.state.isSearchMode'>
                   <div layout-gt-xs="row">
                     <md-input-container class='' flex-gt-xs>
-                        <label>Type</label>
-                        <md-select ng-model="mod.search.type" ng-disabled="mod.state.searched">
-                          <md-option ng-repeat="item in mod.search.types" value="{{item.val}}">
-                            {{item.desc}}
-                          </md-option>
-                        </md-select>
-                      </md-input-container>
+                      <label>Cate</label>
+                      <md-select ng-model="mod.search.cate" ng-disabled="mod.state.searched">
+                        <md-option ng-repeat="item in mod.search.cates" value="{{item.val}}">
+                          {{item.text}}
+                        </md-option>
+                      </md-select>
+                    </md-input-container>
+                    <md-input-container class='' flex-gt-xs>
+                      <label>Type</label>
+                      <md-select ng-model="mod.search.type" ng-disabled="mod.state.searched">
+                        <md-option ng-repeat="item in mod.search.types" value="{{item.val}}">
+                          {{item.text}}
+                        </md-option>
+                      </md-select>
+                    </md-input-container>
                     <md-input-container class='keyword' flex-gt-xs>
                         <label>Keyword</label>
                         <input ng-model="mod.search.keyword" ng-disabled="mod.state.searched" >
@@ -108,10 +116,10 @@
                   <md-list flex class='md-dense' ng-if="mod.histories.length > 0">
                       <md-list-item class='md-2-line' ng-repeat="item in mod.histories track by $index" ng-click='fn.evt.openTab(item)' ng-class='{ "row-notice" : item.isFixed , "row-new" : !item.isFixed && item.isNewItem  }' ng-mouseover="item.isFocused = true" ng-mouseleave="item.isFocused = false" ng-init="item.isFocused">
                           <div class="md-list-item-text">
-                              <div ng-class='{ "col-notice" : item.isFixed , "col-new" : !item.isFixed && item.isNewItem  }'></div>
+                              <div ng-class='{ "col-notice" : item.isNotice , "col-new" : !item.isNotice && item.isNew  }'></div>
                             <h3><b>{{ item.title }}</b></h3>
                             <h4>{{ item.author }}</h4>
-                            <p>{{ item.date }}</p>
+                            <p>{{ item.date }} ({{ item.watched_date | frmLongDate}}에 읽었습니다)</p>
                           </div>
                       </md-list-item>
                     </md-list>      
@@ -131,7 +139,7 @@
                     <md-list flex class='md-dense' ng-if="mod.favorites.length > 0">
                         <md-list-item class='md-2-line' ng-repeat="item in mod.favorites" ng-click='fn.evt.openTab(item)' ng-class='{ "row-notice" : item.isFixed , "row-new" : !item.isFixed && item.isNewItem  }' ng-mouseover="item.isFocused = true" ng-mouseleave="item.isFocused = false" ng-init="item.isFocused = false">
                             <div class="md-list-item-text">
-                                <div ng-class='{ "col-notice" : item.isFixed , "col-new" : !item.isFixed && item.isNewItem  }'></div>
+                                <div ng-class='{ "col-notice" : item.isNotice , "col-new" : !item.isNotice && item.isNew  }'></div>
                               <h3><b>{{ item.title }}</b></h3>
                               <h4>{{ item.author }}</h4>
                               <p>{{ item.date }}</p>
@@ -146,7 +154,8 @@
         </md-tabs>
         <section class='footer' layout="row"  layout-sm="column" layout-align="center center" layout-wrap>
             <h5>
-                Copyright (c) 2018 YOOGOMJA MIT LICENCE. https://github.com/YOOGOMJA/syunotification
+                Copyright (c) 2018 YOOGOMJA MIT LICENCE. 
+                <a target='_blank' href='https://github.com/YOOGOMJA/syunotification'>github</a>
             </h5>
           </section>
       </md-content>

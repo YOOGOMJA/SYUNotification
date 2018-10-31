@@ -3,9 +3,10 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
     
     $s.mod = {
         IDENTIFIERS : {
-            NOTICE : "NOTICE",
-            HISTORY : "HISTORY",
-            FAVORITE : 'FAVORITE'
+            NOTICE : 'NOTICE',
+            HISTORY : 'HISTORY',
+            FAVORITE : 'FAVORITE',
+            KEYWORD : 'KEYWORD'
         },
         items : [],
         histories : [],
@@ -37,93 +38,93 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
         }
     }
 
-    $s.fn = {
+    $s.chrome = {
+        meta : function(){
+            chrome.runtime.sendMessage({title : 'GET_META_DATA'});
+        }, 
         init : function(){
-            // $s.mod.page.items = [1,2,3,4,5];
-            $s.mod.page.items = [1,2,3,4,5];
             chrome.runtime.onMessage.addListener(function(mesg){
                 if(mesg.title === "GET_BOARD_ITEM"){
-                    $s.mod.items = mesg.data;
+                    
+                    $s.mod.items = mesg.data.items;
                     $s.mod.state.loading = false;
 
-                    if($s.mod.items.length <= 0 || !mesg.data){
-                        $s.mod.page.max = 1;
-                    }
-                    else{
-                        $s.mod.page.max = $s.mod.items[0].__MAX_PAGE;
-                    }
+                    $s.mod.page.max = mesg.data.paging.last;
+                    $s.mod.page.items = mesg.data.paging.data;
+                    var _tmp = moment(mesg.data.last_updated);
+                    $s.mod.last_updated_txt = _tmp.fromNow();
 
-                    if($s.mod.page.max < $s.mod.page.pagecount){
-                        $s.mod.page.items.splice(0);
-                        for(var i = 1 ; i <= $s.mod.page.max ; i++){
-                            $s.mod.page.items.push(i);
-                        }
-                    }
-
+                    console.log(mesg.data.items);
+                    
                     $s.$apply();
-
-                    console.log($s.mod.items);
                 }
                 else if(mesg.title == 'GET_HISTORY_ITEM'){
-                    console.log(mesg.items);
-                    console.log('hi' , mesg);
                     $s.mod.state.loading = false;
-                    $s.mod.histories = mesg.items;
+                    $s.mod.histories = mesg.data;
+                    
                     $s.$apply();
                 }
                 else if(mesg.title === 'GET_FAVORITE_ITEM'){
-                    console.log(mesg.items);
-                    console.log('hi' , mesg);
                     $s.mod.state.loading = false;
-                    $s.mod.favorites = mesg.items;
+                    $s.mod.favorites = mesg.data;
+                    console.log(mesg);
                     $s.$apply();
                 }
                 else if(mesg.title == 'GET_LAST_UPDATED'){
                     if(mesg.data){
-                        console.log('Jello')
                         var _tmp = moment(mesg.data);
                         $s.mod.last_updated_txt = _tmp.fromNow();
                         $s.$apply();
                     }
                 }
+                else if(mesg.title == 'GET_META_DATA'){
+                    if(mesg.data){
+                        // console.log(mesg);
+                        $s.mod.search.types = mesg.data.types;
+                        $s.mod.search.type = $s.mod.search.types[0].val;
+                        $s.mod.search.cates = mesg.data.categories;
+                        $s.mod.search.cate = $s.mod.search.cates[0].val;
+                    }
+                }
             });
-
-            chrome.runtime.sendMessage({
-                title : 'GET_LAST_UPDATED'
+        }
+    }
+    $s.fn = {
+        init : function(){
+            // $s.mod.page.items = [1,2,3,4,5];
+            $s.mod.page.items = [1,2,3,4,5];
+            
+            $s.chrome.init();
+            $s.chrome.meta();
+            $s.fn.load({
+                page : 1,
+                forced : true
             });
-
             $s.fn.evt.search.init();
             // $s.fn.load(1 , false);
         },
-        load : function(page, forced){
+        load : function(opt){
             if(!$s.mod.state.loading){
                 $s.mod.state.loading = true;
-                chrome.runtime.sendMessage({ title : "GET_BOARD_ITEM" , page : page , forced : forced}, function(){
-                    
-                });
-                
-                // chrome.storage.sync.get(['LAST_UPDATED'] , function(item){
-                //     if(item.LAST_UPDATED){
-                //         console.log('Jello')
-                //         var _tmp = moment(item.LAST_UPDATED);
-                //         $s.mod.last_updated_txt = _tmp.fromNow();
-                //         $s.$apply();
-                //     }
-                // });
-                chrome.runtime.sendMessage({
-                    title : 'GET_LAST_UPDATED'
-                });
+                chrome.runtime.sendMessage({ 
+                    title : "GET_BOARD_ITEM" , 
+                    page : opt.page ? opt.page : 1,
+                    cate : opt.cate ? opt.cate : '',
+                    type : opt.type ? opt.type : '',
+                    keyword : opt.keyword ? opt.keyword : '',
+                    forced : opt.forced
+                });    
             }
         },
         evt : {
-            
+            // 모든 상태를 초기화하고 데이터를 가져온다
             reload : function(){
                 $s.mod.page.current = 1;
-                $s.mod.page.items.splice(0);
-                for(var i= 1 ; i <= 5;i++){
-                    $s.mod.page.items.push(i);
-                }
-                // $s.fn.load(1,true);
+                $s.fn.load({
+                    page : $s.mod.page.current,
+                    forced : true
+                });
+
                 $s.mod.state.searched = false;
                 $s.mod.state.isSearchMode = false;
                 $s.fn.evt.search.init();
@@ -136,15 +137,11 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
                     else{
                         if(!$s.mod.state.loading && ($s.mod.page.current + 1) < $s.mod.page.max){
                             $s.mod.page.current += 1;
-                            $s.fn.load($s.mod.page.current,false);
-                            if($s.mod.page.current > $s.mod.page.items[4]){
-                                $s.mod.page.items.splice(0);
-                                for(var i = 0 ; i< $s.mod.page.pagecount;i++ ){
-                                    if(($s.mod.page.current + i) <= $s.mod.page.max){
-                                        $s.mod.page.items.push($s.mod.page.current + i);
-                                    }
-                                }
-                            }
+                            $s.fn.load({
+                                page : $s.mod.page.current,
+                                forced : true
+                            });
+                            
                         }
                     }
                 },
@@ -155,16 +152,11 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
                     else{
                         if(!$s.mod.state.loading && ($s.mod.page.current - 1) > 0){
                             $s.mod.page.current--;
-                            $s.fn.load($s.mod.page.current,false);
-                            if($s.mod.page.current < $s.mod.page.items[0]){
-                                $s.mod.page.items.splice(0);
-                                for(var i = $s.mod.page.pagecount-1 ; i >= 0 ; i-- ){
-                                    if($s.mod.page.current - i >= 1){
-                                        $s.mod.page.items.push($s.mod.page.current - i);
-                                    }
-                                }
-                                
-                            }
+                            $s.fn.load({
+                                page : $s.mod.page.current,
+                                forced : true
+                            });
+                            
                         }
                     }
                 },
@@ -175,7 +167,12 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
                     else{
                         if(!$s.mod.state.loading){
                             $s.mod.page.current = page;
-                            $s.fn.load($s.mod.page.current, false);
+                            // $s.fn.load($s.mod.page.current, false);
+                            $s.fn.load({
+                                page : $s.mod.page.current,
+                                keyword : $s.mod.search.keyword,
+                                forced : true
+                            });
                         }
                     }
                 }
@@ -270,25 +267,25 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
                         $s.mod.page.current = 1;
                         _fn.footer.enableSearch();
                         chrome.runtime.sendMessage({ 
-                            title : "GET_SEARCHED_ITEM" , 
+                            title : "GET_BOARD_ITEM" , 
                             keyword : $s.mod.search.keyword,
-                            type : $s.mod.search.type
+                            type : $s.mod.search.type,
+                            forced : true
                         });
                     }
                 },
                 init : function(){
-                    $s.mod.state.loading = true;
-
                     _fn.footer.disableSearch();
 
                     $s.mod.page.current = 1;
-                    $s.mod.page.items.splice(0);
-                    for(var i= 1 ; i <= 5;i++){
-                        $s.mod.page.items.push(i);
-                    }
-                    chrome.runtime.sendMessage({ 
-                        title : "GET_INITIALIZED_ITEM" , 
+                    $s.fn.load({
+                        page : $s.mod.page.current,
+                        forced : true
                     });
+                    
+                    // chrome.runtime.sendMessage({ 
+                    //     title : "GET_INITIALIZED_ITEM" , 
+                    // });
                 }
             },
             setFooterState : function(mode){
@@ -354,5 +351,13 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
         _dt = moment(_dt);
 
         return _dt.format('YYYY-MM-DD');
+    }
+})
+.filter('frmLongDate', function(){
+    return function(dateStr){
+        var _dt = new Date(dateStr);
+        _dt = moment(_dt);
+
+        return _dt.format('YYYY-MM-DD HH:MM:SS');
     }
 });

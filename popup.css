@@ -152,7 +152,8 @@ md-tabs:not(.md-no-tab-content):not(.md-dynamic-height){
 
 .btn-pagination{
     margin : 0;
-    min-width:50px!important;
+    min-width:31px!important;
+    padding:0;
     /* color : white; */
 }
 
@@ -167,7 +168,7 @@ md-input-container{
 }
 
 md-input-container.keyword{
-    width : 180px;
+    width : 120px;
 }
 
 .empty{

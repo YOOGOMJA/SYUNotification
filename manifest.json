@@ -18,12 +18,13 @@
             "./bower_components/angular/angular.min.js",
             "./bower_components/bootstrap/dist/js/bootstrap.js",
             "./assets/scripts/COM_QUERIES.js",
+            "./assets/scripts/crawler.js",
             "./background.js"
         ],
         "persistent" : false
     },
     "permissions" : [
-        "<all_urls>" , "storage" , "tabs"
+        "<all_urls>" , "storage" , "tabs" , "notifications"
     ]
   }
 
