@@ -38,8 +38,10 @@
 
 ## Frameworks & Libraries
 
-[AngularJS 1.x](https://angularjs.org/)
+[AngularJS 1.x](https://angularjs.org/) 
+
 [AngularJS 1.x Material](https://material.angularjs.org/latest/)
+
 [jQuery](https://jquery.com/)
 [momentJS](http://momentjs.com/)
 [chrome extension](https://developer.chrome.com/extensions/getstarted)
