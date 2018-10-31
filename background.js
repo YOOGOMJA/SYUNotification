@@ -141,12 +141,6 @@ chrome.runtime.onMessage.addListener(function(mesg, sender , sendResponse){
         chrome.storage.sync.get(_bg.IDENTIFIERS.sync.FAVORITE_ITEMS , function(item){
             _bg.data.favorites = item[_bg.IDENTIFIERS.sync.FAVORITE_ITEMS] ? item[_bg.IDENTIFIERS.sync.FAVORITE_ITEMS] : [];
 
-            // _bg.data.favorites.map(function(fac){
-                
-            //     if(item.contentId === mesg.contentId){
-            //         _bg.data.favorites.splice(idx,1);
-            //     }
-            // });
             for(var i = 0 ; i < _bg.data.favorites.length; i++){
                 if(_bg.data.favorites[i].contentId === mesg.contentId){
                     _bg.data.favorites.splice(i , 1);
