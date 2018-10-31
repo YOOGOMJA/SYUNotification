@@ -36,3 +36,11 @@
 이렇게 등록된 항목은 즐겨찾기 탭에서 확인할 수 있고, 최대 10개까지 등록됩니다.
 이 정보는 기기간에 공유됩니다. 
 
+## Frameworks & Libraries
+
+![AngularJS 1.x](https://angularjs.org/)
+![AngularJS 1.x Material](https://material.angularjs.org/latest/)
+![jQuery](https://jquery.com/)
+![momentJS](http://momentjs.com/)
+![chrome extension](https://developer.chrome.com/extensions/getstarted)
+
