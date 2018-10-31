@@ -159,13 +159,7 @@ chrome.runtime.onMessage.addListener(function(mesg, sender , sendResponse){
         });
     }
     else if(mesg.title === _bg.IDENTIFIERS.MESG.GET_HISTORY_ITEM){
-        // chrome.runtime.sendMessage({
-        //     title : mesg.title,
-        //     data : _bg.data.histories
-        // });
-        
         chrome.storage.sync.get(_bg.IDENTIFIERS.sync.HISTORY_ITEMS, function(item){
-            console.log(item);
             _bg.data.histories = item[_bg.IDENTIFIERS.sync.HISTORY_ITEMS];
 
             chrome.runtime.sendMessage({

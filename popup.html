@@ -125,32 +125,37 @@
                     </md-list>      
               </md-content>
               
-            </md-tab>
-            <md-tab label="FAVORITE" ng-value="FAVORITE">
-                <md-content flex class='list not-notice'>
-                    <div class='empty' ng-if='mod.favorites.length <= 0'>
-                      <h2>
-                        아직 즐겨 찾기가 없습니다.
-                      </h2>
-                      <h4>
-                        학사 공지 목록에서 추가할 수 있습니다.
-                      </h4>
-                    </div>
-                    <md-list flex class='md-dense' ng-if="mod.favorites.length > 0">
-                        <md-list-item class='md-2-line' ng-repeat="item in mod.favorites" ng-click='fn.evt.openTab(item)' ng-class='{ "row-notice" : item.isFixed , "row-new" : !item.isFixed && item.isNewItem  }' ng-mouseover="item.isFocused = true" ng-mouseleave="item.isFocused = false" ng-init="item.isFocused = false">
-                            <div class="md-list-item-text">
-                                <div ng-class='{ "col-notice" : item.isNotice , "col-new" : !item.isNotice && item.isNew  }'></div>
-                              <h3><b>{{ item.title }}</b></h3>
-                              <h4>{{ item.author }}</h4>
-                              <p>{{ item.date }}</p>
-                              <md-button class="md-icon-button fade" aria-label="Favorite" ng-if='item.isFocused' ng-click='fn.evt.fav.del(item.contentId)' >
-                                <md-icon md-svg-icon="./assets/icons/favorite.svg" class="favorite-icon selected"></md-icon>
-                              </md-button>
-                            </div>
-                        </md-list-item>
-                      </md-list>      
-                </md-content>
-              </md-tab>
+          </md-tab>
+          <md-tab label="FAVORITE" ng-value="FAVORITE">
+              <md-content flex class='list not-notice'>
+                  <div class='empty' ng-if='mod.favorites.length <= 0'>
+                    <h2>
+                      아직 즐겨 찾기가 없습니다.
+                    </h2>
+                    <h4>
+                      학사 공지 목록에서 추가할 수 있습니다.
+                    </h4>
+                  </div>
+                  <md-list flex class='md-dense' ng-if="mod.favorites.length > 0">
+                      <md-list-item class='md-2-line' ng-repeat="item in mod.favorites" ng-click='fn.evt.openTab(item)' ng-class='{ "row-notice" : item.isFixed , "row-new" : !item.isFixed && item.isNewItem  }' ng-mouseover="item.isFocused = true" ng-mouseleave="item.isFocused = false" ng-init="item.isFocused = false">
+                          <div class="md-list-item-text">
+                              <div ng-class='{ "col-notice" : item.isNotice , "col-new" : !item.isNotice && item.isNew  }'></div>
+                            <h3><b>{{ item.title }}</b></h3>
+                            <h4>{{ item.author }}</h4>
+                            <p>{{ item.date }}</p>
+                            <md-button class="md-icon-button fade" aria-label="Favorite" ng-if='item.isFocused' ng-click='fn.evt.fav.del(item.contentId)' >
+                              <md-icon md-svg-icon="./assets/icons/favorite.svg" class="favorite-icon selected"></md-icon>
+                            </md-button>
+                          </div>
+                      </md-list-item>
+                    </md-list>      
+              </md-content>
+          </md-tab>
+          <md-tab label="KEYWORD" ng-value='KEYWORD'>
+            <md-content flex class='list not-notice'>
+              KEYWORD!!
+            </md-content>
+          </md-tab>
         </md-tabs>
         <section class='footer' layout="row"  layout-sm="column" layout-align="center center" layout-wrap>
             <h5>

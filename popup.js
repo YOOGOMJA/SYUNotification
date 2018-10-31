@@ -17,7 +17,6 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
             max : 9999,
             pagecount : 5
         },
-        // loading : false,
         last_updated_txt : '',
         nav : {
             selected : 0
@@ -282,10 +281,6 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
                         page : $s.mod.page.current,
                         forced : true
                     });
-                    
-                    // chrome.runtime.sendMessage({ 
-                    //     title : "GET_INITIALIZED_ITEM" , 
-                    // });
                 }
             },
             setFooterState : function(mode){
