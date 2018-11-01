@@ -30,7 +30,11 @@ let _bg = {
         items : [],
         paging : [],
         favorites : [],
-        histories : []
+        histories : [],
+        stored : {
+            items : {},
+            paging : {},
+        }
     }
 }
 
@@ -53,11 +57,19 @@ chrome.runtime.onMessage.addListener(function(mesg, sender , sendResponse){
         // 키워드 관련 추가할 것 
     }
     else if(mesg.title === _bg.IDENTIFIERS.MESG.GET_BOARD_ITEM){
-        if(mesg.forced){
+        if(!_bg.data.stored.items.hasOwnProperty('page' + mesg.page) || mesg.forced){
+            if(mesg.forced){ 
+                for(var key in _bg.data.stored.items){
+                    delete _bg.data.stored.items[key];
+                }
+                for(var key in _bg.data.stored.paging){
+                    delete _bg.data.stored.paging[key];
+                }
+            }
             _Crawler.load(mesg.page,mesg.cate,mesg.type,mesg.keyword)
             .then(function(data, paging){
-                _bg.data.items = data;
-                _bg.data.paging = paging;
+                _bg.data.stored.items['page' + mesg.page] = data;
+                _bg.data.stored.paging['page' + mesg.page] = paging;
                 _bg.data.last_updated = (new Date()).getTime();
 
                 let sync_item = {};
@@ -76,12 +88,11 @@ chrome.runtime.onMessage.addListener(function(mesg, sender , sendResponse){
             }, function(e){ alert(e); });
         }
         else {
-            let dt = _Crawler.get();
             chrome.runtime.sendMessage({
-                title : _bg.IDENTIFIERS.MESG.GET_BOARD_ITEM,
+                title : mesg.title,
                 data : {
-                    items : dt.data,
-                    paging : dt.paging,
+                    items : _bg.data.stored.items['page' + mesg.page],
+                    paging : _bg.data.stored.paging['page' + mesg.page],
                     last_updated : _bg.data.last_updated
                 }
             });
@@ -159,7 +170,7 @@ chrome.runtime.onMessage.addListener(function(mesg, sender , sendResponse){
         });
     }
     else if(mesg.title === _bg.IDENTIFIERS.MESG.GET_HISTORY_ITEM){
-        chrome.storage.sync.get(_bg.IDENTIFIERS.sync.HISTORY_ITEMS, function(item){
+        chrome.storage.local.get(_bg.IDENTIFIERS.sync.HISTORY_ITEMS, function(item){
             _bg.data.histories = item[_bg.IDENTIFIERS.sync.HISTORY_ITEMS];
 
             chrome.runtime.sendMessage({
@@ -170,21 +181,27 @@ chrome.runtime.onMessage.addListener(function(mesg, sender , sendResponse){
     }
     else if(mesg.title === _bg.IDENTIFIERS.MESG.SET_HISTORY_ITEM){
         if(mesg.item){
-            mesg.item.watched_date = (new Date()).getTime();
-            // _bg.data.histories.push(mesg.item);
-            _bg.data.histories.unshift(mesg.item);
-            if(_bg.data.histories.length >= 10){
-                while(_bg.histories.length != 10){
-                    _bg.histories.pop();
+            chrome.storage.local.get(_bg.IDENTIFIERS.sync.HISTORY_ITEMS , function(item){
+                if(item[_bg.IDENTIFIERS.sync.HISTORY_ITEMS] && item[_bg.IDENTIFIERS.sync.HISTORY_ITEMS].length > 0){
+                    _bg.data.histories = item[_bg.IDENTIFIERS.sync.HISTORY_ITEMS];
                 }
-            }
 
-            let sync_items = {};
-            sync_items[_bg.IDENTIFIERS.sync.HISTORY_ITEMS] = _bg.data.histories;
-
-            chrome.storage.sync.set(sync_items , function(){
-                // updated
+                mesg.item.watched_date = (new Date()).getTime();                
+                _bg.data.histories.unshift(mesg.item);
+                if(_bg.data.histories.length >= 10){
+                    while(_bg.histories.length != 10){
+                        _bg.histories.pop();
+                    }
+                }
+                
+                let sync_items = {};
+                sync_items[_bg.IDENTIFIERS.sync.HISTORY_ITEMS] = _bg.data.histories;
+                chrome.storage.local.set(sync_items , function(){
+                    // updated
+                    console.log('history item stored success');
+                });
             });
+
         }
     }   
 });
