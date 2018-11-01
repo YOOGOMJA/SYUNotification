@@ -40,13 +40,34 @@ let _bg = {
         keywords : [],
         old : {},
         new : {},
+    },
+    crawler : {
+        fn : {
+            init : function(){
+                // 먼저 작동하던 인터벌은 삭제 
+                window.clearInterval(_bg.crawler.timer);
+                _bg.crawler.timer = window.setInterval(_bg.crawler.fn.tick , _bg.crawler.interval_time);
+
+                console.log('Background Load Module Initialized');
+            },
+            tick : function(){
+                console.log('tick');
+            }
+        },
+        timer : {},
+        // m sec
+        interval_time : 1000// * 1000 * 60
     }
 }
 
 // INSTALLED
 chrome.runtime.onInstalled.addListener(function() {
-    
+    _bg.crawler.fn.init();
 });
+
+jQuery(function(){
+    _bg.crawler.fn.init();
+})
 
 chrome.runtime.onMessage.addListener(function(mesg, sender , sendResponse){
     if(mesg.title === _bg.IDENTIFIERS.MESG.GET_META_DATA){
@@ -194,6 +215,8 @@ chrome.runtime.onMessage.addListener(function(mesg, sender , sendResponse){
                 if(item[_bg.IDENTIFIERS.sync.HISTORY_ITEMS] && item[_bg.IDENTIFIERS.sync.HISTORY_ITEMS].length > 0){
                     _bg.data.histories = item[_bg.IDENTIFIERS.sync.HISTORY_ITEMS];
                 }
+                
+                if(!_bg.data.histories.unshift){ _bg.data.histories = []; }
 
                 mesg.item.watched_date = (new Date()).getTime();                
                 _bg.data.histories.unshift(mesg.item);
