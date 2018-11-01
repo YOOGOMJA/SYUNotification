@@ -43,6 +43,26 @@ md-tab-item{
     padding : 0;
 }
 
+.list .md-list-item-inner h3{
+    height : 16px;
+}
+.list .md-list-item-inner h4{
+    height : 14px;
+}
+
+.list .item-category{
+    border: 1px solid #0da59c;
+    font-size: .3em;
+    border-radius: 3px;
+    color: #0da59c;
+    margin-right: 4px;
+    padding: 0px 3px;
+}
+
+.content .md-list-item-inner{
+    width:360px !important;
+}
+
 .col-notice{
     background-color:#F57F17!important;
     width: 6px;
