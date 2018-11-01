@@ -16,7 +16,8 @@ let _bg = {
             DEL_HISTORY_ITEM : 'DEL_HISTORY_ITEM',
             DEL_FAVORITE_ITEM : 'DEL_FAVORITE_ITEM',
             GET_CONFIG_DATA : 'GET_CONFIG_DATA',
-            GET_META_DATA : 'GET_META_DATA'
+            GET_META_DATA : 'GET_META_DATA',
+            GET_KEYWORD_FILTERED_ITEM : 'GET_KEYWORD_FILTERED_ITEM',
         },
         sync : {
             LAST_UPDATED : 'LAST_UPDATED',
@@ -27,14 +28,18 @@ let _bg = {
     },
     data : {
         last_updated : '',
-        items : [],
-        paging : [],
         favorites : [],
         histories : [],
         stored : {
             items : {},
             paging : {},
         }
+    },
+    // 키워드 기능 관련
+    filter : {
+        keywords : [],
+        old : {},
+        new : {},
     }
 }
 
@@ -56,6 +61,9 @@ chrome.runtime.onMessage.addListener(function(mesg, sender , sendResponse){
     else if(mesg.title === _bg.IDENTIFIERS.MESG.GET_CONFIG_DATA){
         // 키워드 관련 추가할 것 
     }
+    else if(mesg.title === _bg.IDENTIFIERS.MESG.GET_KEYWORD_FILTERED_ITEM){
+        
+    }
     else if(mesg.title === _bg.IDENTIFIERS.MESG.GET_BOARD_ITEM){
         if(!_bg.data.stored.items.hasOwnProperty('page' + mesg.page) || mesg.forced){
             if(mesg.forced){ 
@@ -72,6 +80,7 @@ chrome.runtime.onMessage.addListener(function(mesg, sender , sendResponse){
                 _bg.data.stored.paging['page' + mesg.page] = paging;
                 _bg.data.last_updated = (new Date()).getTime();
 
+                
                 let sync_item = {};
                 sync_item[_bg.IDENTIFIERS.sync.LAST_UPDATED] = _bg.data.last_updated;
 
