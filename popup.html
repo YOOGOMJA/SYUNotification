@@ -37,13 +37,13 @@
           <md-tab label="NOTICE" ng-value="NOTICE">
             <md-content flex class='list'>
                 <md-list flex class='md-dense'>
-                    <md-list-item class='md-2-line' ng-repeat="item in mod.items" ng-click='fn.evt.openTab(item)' ng-class='{ "row-notice" : item.isFixed , "row-new" : !item.isFixed && item.isNewItem  }' ng-mouseover="item.isFocused = true" ng-mouseleave="item.isFocused = false" ng-init="item.isFocused">
+                    <md-list-item class='md-2-line' ng-repeat="item in mod.items" ng-click='fn.evt.openTab(item)' ng-class='{ "row-notice" : item.isNotice , "row-new" : !item.isNotice && item.isNew  }' ng-mouseover="item.isFocused = true" ng-mouseleave="item.isFocused = false" ng-init="item.isFocused">
                         <div class="md-list-item-text">
                             <div ng-class='{ "col-notice" : item.isNotice , "col-new" : !item.isNotice && item.isNew  }'></div>
-                          <h3><b>{{ item.title }}</b></h3>
-                          <h4>{{ item.author }}</h4>
-                          <p>{{ item.date }}</p>
-                          <md-button class="md-icon-button fade" aria-label="Favorite" ng-click='fn.evt.fav.add(item)' ng-if="item.isFocused">
+                            <h3><b>{{ item.title }}</b></h3>
+                            <h4>{{ item.author }}</h4>
+                            <p>{{ item.date }}</p>
+                            <md-button class="md-icon-button fade" aria-label="Favorite" ng-click='fn.evt.fav.add(item)' ng-if="item.isFocused">
                             <!-- <md-icon md-svg-icon="./assets/icons/favorite.svg" class="favorite-icon " ng-class='{ "selected" : item.isStored }'></md-icon> -->
                             <md-icon md-svg-icon="./assets/icons/favorite.svg" class="favorite-icon selected" ></md-icon>
                           </md-button>
