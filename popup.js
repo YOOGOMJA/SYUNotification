@@ -111,7 +111,7 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
                     cate : opt.cate ? opt.cate : '',
                     type : opt.type ? opt.type : '',
                     keyword : opt.keyword ? opt.keyword : '',
-                    forced : opt.forced
+                    forced : false
                 });    
             }
         },
