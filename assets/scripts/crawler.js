@@ -102,8 +102,11 @@ let _Crawler = (function(jQuery){
                     item.cate = title.find(meta.css.cate).length <= 0 ? '' : title.find(meta.css.cate).text().trim();
                     item.location = title.find('a').prop('href');
                     item.isNew = title.find(meta.css.new).length > 0;
+                    
                     item.contentId = item.location.split('?')[0];
-                    item.contentId = item.contentId.replace(config.url, '');
+                    item.contentId = item.contentId.slice(0, item.contentId.lastIndexOf('/'));
+                    item.contentId = item.contentId.slice(item.contentId.lastIndexOf('/') , item.contentId.length);
+                    item.contentId = decodeURI(item.contentId);
 
                     // 3. AUTHOR
                     let author = row.find(meta.css.author_area);

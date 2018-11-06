@@ -37,9 +37,42 @@ let _bg = {
     },
     // 키워드 기능 관련
     filter : {
-        keywords : [],
+        keywords : ['동계'],
         old : {},
         new : {},
+        fn : {
+            mw : function(data , paging){
+                let deferred = jQuery.Deferred();
+
+                if(_bg.filter.keywords.length <= 0){ 
+                    deferred.resolve(data , paging);
+                    return deferred.promise(); 
+                }
+
+                _bg.filter.old = _bg.filter.new;
+                _bg.filter.new = {};
+                
+                for(idx in _bg.filter.keywords){
+                    let keyword = _bg.filter.keywords[idx];
+
+                    _bg.filter.new[keyword] = [];
+
+                    for(i in data){
+                        if(data[i].title.indexOf(keyword) >= 0){
+                            _bg.filter.new[keyword].push(data[i]);
+                            data[i].isFiltered = true;
+                        }
+                        else{
+                            data[i].isFiltered = false;
+                        }
+                    }
+                }
+
+                deferred.resolve(data, paging);
+
+                return deferred.promise();
+            }
+        }
     },
     crawler : {
         fn : {
@@ -51,13 +84,27 @@ let _bg = {
                 console.log('Background Load Module Initialized');
             },
             tick : function(){
-                console.log('tick');
+                _Crawler.load(1, '', '', '')
+                .then(_bg.filter.fn.mw)
+                .then(function(data, paging){
+                    // tick이 끝나고나면 
+                    for(key in _bg.data.stored.items){
+                        delete _bg.data.stored.items[key];
+                    }
+                    for(key in _bg.data.stored.paging){
+                        delete _bg.data.stored.paging[key];
+                    }
+
+                    _bg.data.stored.item['page1'] = data;
+                    _bg.data.stored.paging['page1'] = paging;
+                    _bg.data.last_updated = (new Date()).getTime();
+                });
             }
         },
         timer : {},
         // m sec
-        interval_time : 1000// * 1000 * 60
-    }
+        interval_time : 1000 * 60 * 60
+    },
 }
 
 // INSTALLED
@@ -96,6 +143,7 @@ chrome.runtime.onMessage.addListener(function(mesg, sender , sendResponse){
                 }
             }
             _Crawler.load(mesg.page,mesg.cate,mesg.type,mesg.keyword)
+            .then(_bg.filter.fn.mw)
             .then(function(data, paging){
                 _bg.data.stored.items['page' + mesg.page] = data;
                 _bg.data.stored.paging['page' + mesg.page] = paging;
@@ -216,7 +264,12 @@ chrome.runtime.onMessage.addListener(function(mesg, sender , sendResponse){
                     _bg.data.histories = item[_bg.IDENTIFIERS.sync.HISTORY_ITEMS];
                 }
                 
-                if(!_bg.data.histories.unshift){ _bg.data.histories = []; }
+                if(!item.hasOwnProperty(_bg.IDENTIFIERS.sync.HISTORY_ITEMS)){
+                    _bg.data.histories = [];
+                }
+                if(!_bg.data.histories.unshift){ 
+                    _bg.data.histories = []; 
+                }
 
                 mesg.item.watched_date = (new Date()).getTime();                
                 _bg.data.histories.unshift(mesg.item);
