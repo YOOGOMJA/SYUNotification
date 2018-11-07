@@ -45,7 +45,7 @@
                   </h4>
                 </div>
                 <md-list flex class='md-dense' ng-if='mod.items.length > 0'>
-                    <md-list-item class='md-2-line' ng-repeat="item in mod.items" ng-click='fn.evt.openTab(item)' ng-class='{ "row-notice" : item.isFixed , "row-new" : !item.isFixed && item.isNewItem  }' ng-mouseover="item.isFocused = true" ng-mouseleave="item.isFocused = false" ng-init="item.isFocused">
+                    <md-list-item class='md-2-line' ng-repeat="item in mod.items" ng-click='fn.evt.openTab(item)' ng-class='{ "row-notice" : item.isNotice , "row-new" : !item.isNotice && item.isNew  }' ng-mouseover="item.isFocused = true" ng-mouseleave="item.isFocused = false" ng-init="item.isFocused">
                         <div class="md-list-item-text">
                             <div ng-class='{ "col-notice" : item.isNotice , "col-new" : !item.isNotice && item.isNew  }'></div>
                           <h3>
@@ -125,7 +125,7 @@
                     </h4>
                   </div>
                   <md-list flex class='md-dense' ng-if="mod.histories.length > 0">
-                      <md-list-item class='md-2-line' ng-repeat="item in mod.histories track by $index" ng-click='fn.evt.openTab(item)' ng-class='{ "row-notice" : item.isFixed , "row-new" : !item.isFixed && item.isNewItem  }' ng-mouseover="item.isFocused = true" ng-mouseleave="item.isFocused = false" ng-init="item.isFocused">
+                      <md-list-item class='md-2-line' ng-repeat="item in mod.histories track by $index" ng-click='fn.evt.openTab(item)' ng-class='{ "row-notice" : item.isNotice , "row-new" : !item.isNotice && item.isNew  }' ng-mouseover="item.isFocused = true" ng-mouseleave="item.isFocused = false" ng-init="item.isFocused">
                           <div class="md-list-item-text">
                               <div ng-class='{ "col-notice" : item.isNotice , "col-new" : !item.isNotice && item.isNew  }'></div>
                             <h3><b>{{ item.title }}</b></h3>
@@ -148,7 +148,7 @@
                     </h4>
                   </div>
                   <md-list flex class='md-dense' ng-if="mod.favorites.length > 0">
-                      <md-list-item class='md-2-line' ng-repeat="item in mod.favorites" ng-click='fn.evt.openTab(item)' ng-class='{ "row-notice" : item.isFixed , "row-new" : !item.isFixed && item.isNewItem  }' ng-mouseover="item.isFocused = true" ng-mouseleave="item.isFocused = false" ng-init="item.isFocused = false">
+                      <md-list-item class='md-2-line' ng-repeat="item in mod.favorites" ng-click='fn.evt.openTab(item)' ng-class='{ "row-notice" : item.isNotice , "row-new" : !item.isNotice && item.isNew  }' ng-mouseover="item.isFocused = true" ng-mouseleave="item.isFocused = false" ng-init="item.isFocused = false">
                           <div class="md-list-item-text">
                               <div ng-class='{ "col-notice" : item.isNotice , "col-new" : !item.isNotice && item.isNew  }'></div>
                             <h3><b>{{ item.title }}</b></h3>
