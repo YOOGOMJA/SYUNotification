@@ -34,8 +34,8 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
                 { val : 'writer' , desc : '작성자' },
                 { val : 'content' , desc : '내용' }
             ]
-        }
-    }
+        },
+    };
 
     $s.chrome = {
         meta : function(){
@@ -52,8 +52,6 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
                     $s.mod.page.items = mesg.data.paging.data;
                     var _tmp = moment(mesg.data.last_updated);
                     $s.mod.last_updated_txt = _tmp.fromNow();
-
-                    console.log(mesg.data.items);
                     
                     $s.$apply();
                 }
@@ -97,10 +95,9 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
             $s.chrome.meta();
             $s.fn.load({
                 page : 1,
-                forced : true
+                forced : false
             });
             $s.fn.evt.search.init();
-            // $s.fn.load(1 , false);
         },
         load : function(opt){
             if(!$s.mod.state.loading){
@@ -111,7 +108,7 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
                     cate : opt.cate ? opt.cate : '',
                     type : opt.type ? opt.type : '',
                     keyword : opt.keyword ? opt.keyword : '',
-                    forced : false
+                    forced : opt.forced
                 });    
             }
         },
@@ -138,7 +135,7 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
                             $s.mod.page.current += 1;
                             $s.fn.load({
                                 page : $s.mod.page.current,
-                                forced : true
+                                forced : false
                             });
                             
                         }
@@ -153,9 +150,8 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
                             $s.mod.page.current--;
                             $s.fn.load({
                                 page : $s.mod.page.current,
-                                forced : true
+                                forced : false
                             });
-                            
                         }
                     }
                 },
@@ -170,7 +166,7 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
                             $s.fn.load({
                                 page : $s.mod.page.current,
                                 keyword : $s.mod.search.keyword,
-                                forced : true
+                                forced : false
                             });
                         }
                     }

@@ -16,13 +16,18 @@ let _bg = {
             DEL_HISTORY_ITEM : 'DEL_HISTORY_ITEM',
             DEL_FAVORITE_ITEM : 'DEL_FAVORITE_ITEM',
             GET_CONFIG_DATA : 'GET_CONFIG_DATA',
-            GET_META_DATA : 'GET_META_DATA'
+            GET_META_DATA : 'GET_META_DATA',
+            GET_KEYWORDS : 'GET_KEYWORDS',
         },
         sync : {
             LAST_UPDATED : 'LAST_UPDATED',
             FAVORITE_ITEMS : 'FAVORITE_ITEMS',
             HISTORY_ITEMS : 'HISTORY_ITEMS',
             INTERVAL : 'INTERVAL'
+        },
+        states : {
+            REQUESTING : 'REQUESTING',
+            IDLE : 'IDLE'
         }
     },
     data : {
@@ -30,13 +35,163 @@ let _bg = {
         items : [],
         paging : [],
         favorites : [],
-        histories : []
-    }
-}
+        histories : [],
+        stored : {
+            items : {},
+            paging : {},
+        },
+        states : '',
+    },
+    // notification 관련
+    noti : {
+        old : [],
+        new : [],
+        fn : {
+            init : function(){
+
+            },
+            makeNotification : function(hasNewItems){
+                if(hasNewItems){
+                    let ct = '';
+                    let msg = '';
+
+                    if(_bg.noti.new.length > 1){
+                        msg += _bg.noti.new[0].title.slice(0,20);
+                        msg += '.. 외 ' + _bg.noti.new.length - 1 + '건';
+                        ct = '학사공지에 새로운 글이 올라왔습니다!';
+                    }
+                    else{
+                        msg += _bg.noti.new[0].title;
+                        ct = '학사공지에 새로운 글이 올라왔습니다!';
+                    }
+
+                    chrome.notifications.create({
+                        type : 'basic',
+                        iconUrl : '../assets/logo@128.png',
+                        title : 'SYU Notification',
+                        context : ct,
+                        message : msg
+                    });
+                }
+                
+            },
+            mw : function(data, paging){
+                let deferred = jQuery.Deferred();
+
+                _bg.noti.old = _bg.noti.new.slice(0,_bg.noti.new.length);
+                _bg.noti.new = [];
+                for(let idx in data){
+                    if(data[idx].isNew || data[idx].isNotice){
+                        _bg.noti.new.push(data[idx]);
+                    }
+                }
+                
+                let hasNewItems = false;
+                if(_bg.noti.old.length === 0 && _bg.noti.new.length > 0){
+                    hasNewItems = true;
+                }
+                else if(_bg.noti.old.length !== _bg.noti.new.length && _bg.noti.new.length > 0){
+                    hasNewItems = true;
+                }
+                else{
+                    if(_bg.noti.new.length > 0){
+                        for(let idx_old in _bg.noti.old){
+                            for(let idx_new in _bg.noti.new){
+                                if(_bg.noti.old[idx_old].contentId !== _bg.noti.new[idx_new].contentId){
+                                    hasNewItems = true;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                _bg.noti.fn.makenotification(hasNewItems);
+
+                deferred.resolve(data , paging);
+                return deferred.promise();
+            }
+        }
+    },
+    // 키워드 기능 관련
+    filter : {
+        keywords : ['동계'],
+        old : {},
+        new : {},
+        fn : {
+            mw : function(data , paging){
+
+                console.log(data , paging);
+
+                let deferred = jQuery.Deferred();
+
+                if(_bg.filter.keywords.length <= 0){ 
+                    deferred.resolve(data , paging);
+                    return deferred.promise(); 
+                }
+
+                _bg.filter.old = _bg.filter.new;
+                _bg.filter.new = {};
+                
+                for(idx in _bg.filter.keywords){
+                    let keyword = _bg.filter.keywords[idx];
+
+                    _bg.filter.new[keyword] = [];
+
+                    for(i in data){
+                        if(data[i].title.indexOf(keyword) >= 0){
+                            _bg.filter.new[keyword].push(data[i]);
+                            data[i].isFiltered = true;
+                        }
+                        else{
+                            data[i].isFiltered = false;
+                        }
+                    }
+                }
+                deferred.resolve(data, paging);
+
+                return deferred.promise();
+            }
+        }
+    },
+    crawler : {
+        fn : {
+            init : function(){
+                // 먼저 작동하던 인터벌은 삭제 
+                window.clearInterval(_bg.crawler.timer);
+                _bg.crawler.timer = window.setInterval(_bg.crawler.fn.tick , _bg.crawler.interval_time);
+                console.log('Background Load Module Initialized');
+            },
+            tick : function(){
+                if(_bg.data.states !== _bg.IDENTIFIERS.states.REQUESTING){
+                    _Crawler.load(1, '', '', '')
+                    .then(_bg.filter.fn.mw)
+                    .then(_bg.noti.fn.mw)
+                    .then(function(data, paging){
+                        // tick이 끝나고나면 
+                        for(key in _bg.data.stored.items){
+                            delete _bg.data.stored.items[key];
+                        }
+                        for(key in _bg.data.stored.paging){
+                            delete _bg.data.stored.paging[key];
+                        }
+                        _bg.data.stored.item['page1'] = data;
+                        _bg.data.stored.paging['page1'] = paging;
+                        _bg.data.last_updated = (new Date()).getTime();
+                    });
+                }
+               
+            }
+        },
+        timer : {},
+        // m sec
+        interval_time : 1000 * 60
+    },
+};
+
 
 // INSTALLED
 chrome.runtime.onInstalled.addListener(function() {
-    
+    _bg.data.states = _bg.IDENTIFIERS.states.IDLE;    
 });
 
 chrome.runtime.onMessage.addListener(function(mesg, sender , sendResponse){
@@ -49,22 +204,16 @@ chrome.runtime.onMessage.addListener(function(mesg, sender , sendResponse){
             }
         });
     }
-    else if(mesg.title === _bg.IDENTIFIERS.MESG.GET_CONFIG_DATA){
+    else if(mesg.title === _bg.IDENTIFIERS.MESG.GET_CONFIG_DATA)
+    {
         // 키워드 관련 추가할 것 
     }
     else if(mesg.title === _bg.IDENTIFIERS.MESG.GET_BOARD_ITEM){
-        if(mesg.forced){
-            _Crawler.load(mesg.page,mesg.cate,mesg.type,mesg.keyword)
+        if(mesg.cate !== '' || mesg.type !== '' || mesg.keyword !== ''){   
+            // 1.1. 검색인 경우
+            _bg.data.states = _bg.IDENTIFIERS.states.REQUESTING;
+            _Crawler.load(mesg)
             .then(function(data, paging){
-                _bg.data.items = data;
-                _bg.data.paging = paging;
-                _bg.data.last_updated = (new Date()).getTime();
-
-                let sync_item = {};
-                sync_item[_bg.IDENTIFIERS.sync.LAST_UPDATED] = _bg.data.last_updated;
-
-                chrome.storage.sync.set(sync_item);
-
                 chrome.runtime.sendMessage({
                     title : _bg.IDENTIFIERS.MESG.GET_BOARD_ITEM,
                     data : {
@@ -72,19 +221,59 @@ chrome.runtime.onMessage.addListener(function(mesg, sender , sendResponse){
                         paging : paging,
                         last_updated : _bg.data.last_updated
                     }
+                }, ()=>{ 
+                    _bg.data.states = _bg.IDENTIFIERS.states.IDLE;
                 });
-            }, function(e){ alert(e); });
-        }
-        else {
-            let dt = _Crawler.get();
-            chrome.runtime.sendMessage({
-                title : _bg.IDENTIFIERS.MESG.GET_BOARD_ITEM,
-                data : {
-                    items : dt.data,
-                    paging : dt.paging,
-                    last_updated : _bg.data.last_updated
-                }
             });
+        }
+        else{   
+            // 1.2. 검색이 아닌 경우
+            if(mesg.forced || !_bg.data.stored.items.hasOwnProperty('page' + mesg.page)){   
+                // 1.2.1. forced load 혹은 페이지에 해당하는 데이터가 없는 경우 
+                _bg.data.states = _bg.IDENTIFIERS.states.REQUESTING;
+                _Crawler.load(mesg)
+                .then(_bg.filter.fn.mw)
+                .then(function(data , paging){
+                    if(mesg.forced){
+                        for(var key in _bg.data.stored.items){
+                            delete _bg.data.stored.items[key];
+                        }
+                        for(var key in _bg.data.stored.paging){
+                            delete _bg.data.stored.paging[key];
+                        }
+                    }
+                    _bg.data.stored.items['page' + mesg.page] = data;
+                    _bg.data.stored.paging['page' + mesg.page] = paging;
+                    _bg.data.last_updated = (new Date()).getTime();
+
+                    let sync_item = {};
+                    sync_item[_bg.IDENTIFIERS.sync.LAST_UPDATED] = _bg.data.last_updated;
+                    chrome.storage.sync.set(sync_item);
+                    chrome.runtime.sendMessage({
+                        title : _bg.IDENTIFIERS.MESG.GET_BOARD_ITEM,
+                        data : {
+                            items : data,
+                            paging : paging,
+                            last_updated : _bg.data.last_updated
+                        }
+                    }, ()=>{ 
+                        _bg.data.states = _bg.IDENTIFIERS.states.IDLE;
+                    });
+                });
+            }
+            else {   
+                // 1.2.2. 이미 데이터가 있는 경우 
+                chrome.runtime.sendMessage({
+                    title : mesg.title,
+                    data : {
+                        items : _bg.data.stored.items['page' + mesg.page],
+                        paging : _bg.data.stored.paging['page' + mesg.page],
+                        last_updated : _bg.data.last_updated
+                    }
+                } , ()=>{
+                    _bg.data.states = _bg.IDENTIFIERS.states.IDLE;
+                });
+            }
         }
     }
     else if(mesg.title === _bg.IDENTIFIERS.MESG.GET_LAST_UPDATED){
@@ -177,14 +366,21 @@ chrome.runtime.onMessage.addListener(function(mesg, sender , sendResponse){
                 while(_bg.histories.length != 10){
                     _bg.histories.pop();
                 }
+                
+                if(!item.hasOwnProperty(_bg.IDENTIFIERS.sync.HISTORY_ITEMS)){
+                    _bg.data.histories = [];
+                }
+                if(!_bg.data.histories.unshift){ 
+                    _bg.data.histories = []; 
+                }
+
+                let sync_items = {};
+                sync_items[_bg.IDENTIFIERS.sync.HISTORY_ITEMS] = _bg.data.histories;
+
+                chrome.storage.sync.set(sync_items , function(){
+                    // updated
+                });
             }
-
-            let sync_items = {};
-            sync_items[_bg.IDENTIFIERS.sync.HISTORY_ITEMS] = _bg.data.histories;
-
-            chrome.storage.sync.set(sync_items , function(){
-                // updated
-            });
-        }
-    }   
+        }   
+    }
 });
