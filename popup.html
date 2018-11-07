@@ -164,153 +164,22 @@
           </md-tab>
           <md-tab label="KEYWORD" ng-value='KEYWORD'>
             <md-content flex class='list not-notice'>
-                <div class='keyword container'>
-                    <div class='header'>키워드1</div>
+                <div class='keyword container' ng-repeat='keyword in mod.keyword.keywords'>
+                    <div class='header' ng-bind='keyword'></div>
                     <md-list flex class='md-dense'>
-                        <md-list-item class='md-2-line' >
+                        <md-list-item class='md-2-line' ng-repeat="item in mod.keyword.items[keyword]" ng-click='fn.evt.openTab(item)' ng-class='{ "row-notice" : item.isNotice , "row-new" : !item.isNotice && item.isNew  }' ng-mouseover="item.isFocused = true" ng-mouseleave="item.isFocused = false" ng-init="item.isFocused = false">
                             <div class="md-list-item-text">
-                                <div ></div>
-                              <h3><b>제목제목제목</b></h3>
-                              <h4>글쓴글쓴이</h4>
-                              <p>2018.10.12</p>
-                              <md-button class="md-icon-button fade" aria-label="Favorite" ng-if='item.isFocused' ng-click='fn.evt.fav.del(item.contentId)' >
-                                <md-icon md-svg-icon="./assets/icons/favorite.svg" class="favorite-icon selected"></md-icon>
-                              </md-button>
-                            </div>
-                        </md-list-item>
-                        <md-list-item class='md-2-line' >
-                            <div class="md-list-item-text">
-                                <div ></div>
-                              <h3><b>제목제목제목</b></h3>
-                              <h4>글쓴글쓴이</h4>
-                              <p>2018.10.12</p>
-                              <md-button class="md-icon-button fade" aria-label="Favorite" ng-if='item.isFocused' ng-click='fn.evt.fav.del(item.contentId)' >
-                                <md-icon md-svg-icon="./assets/icons/favorite.svg" class="favorite-icon selected"></md-icon>
-                              </md-button>
-                            </div>
-                        </md-list-item>
-                        <md-list-item class='md-2-line' >
-                            <div class="md-list-item-text">
-                                <div ></div>
-                              <h3><b>제목제목제목</b></h3>
-                              <h4>글쓴글쓴이</h4>
-                              <p>2018.10.12</p>
-                              <md-button class="md-icon-button fade" aria-label="Favorite" ng-if='item.isFocused' ng-click='fn.evt.fav.del(item.contentId)' >
-                                <md-icon md-svg-icon="./assets/icons/favorite.svg" class="favorite-icon selected"></md-icon>
-                              </md-button>
-                            </div>
-                        </md-list-item>
-                        <md-list-item class='md-2-line' >
-                            <div class="md-list-item-text">
-                                <div ></div>
-                              <h3><b>제목제목제목</b></h3>
-                              <h4>글쓴글쓴이</h4>
-                              <p>2018.10.12</p>
+                                <div ng-class='{ "col-notice" : item.isNotice , "col-new" : !item.isNotice && item.isNew  }'></div>
+                              <h3><b>{{ item.title }}</b></h3>
+                              <h4>{{ item.author }}</h4>
+                              <p>{{ item.date }}</p>
                               <md-button class="md-icon-button fade" aria-label="Favorite" ng-if='item.isFocused' ng-click='fn.evt.fav.del(item.contentId)' >
                                 <md-icon md-svg-icon="./assets/icons/favorite.svg" class="favorite-icon selected"></md-icon>
                               </md-button>
                             </div>
                         </md-list-item>
                     </md-list>
-                  </div>
-                  <div class='keyword container'>
-                      <div class='header'>키워드1</div>
-                      <md-list flex class='md-dense'>
-                          <md-list-item class='md-2-line' >
-                              <div class="md-list-item-text">
-                                  <div ></div>
-                                <h3><b>제목제목제목</b></h3>
-                                <h4>글쓴글쓴이</h4>
-                                <p>2018.10.12</p>
-                                <md-button class="md-icon-button fade" aria-label="Favorite" ng-if='item.isFocused' ng-click='fn.evt.fav.del(item.contentId)' >
-                                  <md-icon md-svg-icon="./assets/icons/favorite.svg" class="favorite-icon selected"></md-icon>
-                                </md-button>
-                              </div>
-                          </md-list-item>
-                          <md-list-item class='md-2-line' >
-                              <div class="md-list-item-text">
-                                  <div ></div>
-                                <h3><b>제목제목제목</b></h3>
-                                <h4>글쓴글쓴이</h4>
-                                <p>2018.10.12</p>
-                                <md-button class="md-icon-button fade" aria-label="Favorite" ng-if='item.isFocused' ng-click='fn.evt.fav.del(item.contentId)' >
-                                  <md-icon md-svg-icon="./assets/icons/favorite.svg" class="favorite-icon selected"></md-icon>
-                                </md-button>
-                              </div>
-                          </md-list-item>
-                          <md-list-item class='md-2-line' >
-                              <div class="md-list-item-text">
-                                  <div ></div>
-                                <h3><b>제목제목제목</b></h3>
-                                <h4>글쓴글쓴이</h4>
-                                <p>2018.10.12</p>
-                                <md-button class="md-icon-button fade" aria-label="Favorite" ng-if='item.isFocused' ng-click='fn.evt.fav.del(item.contentId)' >
-                                  <md-icon md-svg-icon="./assets/icons/favorite.svg" class="favorite-icon selected"></md-icon>
-                                </md-button>
-                              </div>
-                          </md-list-item>
-                          <md-list-item class='md-2-line' >
-                              <div class="md-list-item-text">
-                                  <div ></div>
-                                <h3><b>제목제목제목</b></h3>
-                                <h4>글쓴글쓴이</h4>
-                                <p>2018.10.12</p>
-                                <md-button class="md-icon-button fade" aria-label="Favorite" ng-if='item.isFocused' ng-click='fn.evt.fav.del(item.contentId)' >
-                                  <md-icon md-svg-icon="./assets/icons/favorite.svg" class="favorite-icon selected"></md-icon>
-                                </md-button>
-                              </div>
-                          </md-list-item>
-                      </md-list>
-                    </div>
-                    <div class='keyword container'>
-                        <div class='header'>키워드1</div>
-                        <md-list flex class='md-dense'>
-                            <md-list-item class='md-2-line' >
-                                <div class="md-list-item-text">
-                                    <div ></div>
-                                  <h3><b>제목제목제목</b></h3>
-                                  <h4>글쓴글쓴이</h4>
-                                  <p>2018.10.12</p>
-                                  <md-button class="md-icon-button fade" aria-label="Favorite" ng-if='item.isFocused' ng-click='fn.evt.fav.del(item.contentId)' >
-                                    <md-icon md-svg-icon="./assets/icons/favorite.svg" class="favorite-icon selected"></md-icon>
-                                  </md-button>
-                                </div>
-                            </md-list-item>
-                            <md-list-item class='md-2-line' >
-                                <div class="md-list-item-text">
-                                    <div ></div>
-                                  <h3><b>제목제목제목</b></h3>
-                                  <h4>글쓴글쓴이</h4>
-                                  <p>2018.10.12</p>
-                                  <md-button class="md-icon-button fade" aria-label="Favorite" ng-if='item.isFocused' ng-click='fn.evt.fav.del(item.contentId)' >
-                                    <md-icon md-svg-icon="./assets/icons/favorite.svg" class="favorite-icon selected"></md-icon>
-                                  </md-button>
-                                </div>
-                            </md-list-item>
-                            <md-list-item class='md-2-line' >
-                                <div class="md-list-item-text">
-                                    <div ></div>
-                                  <h3><b>제목제목제목</b></h3>
-                                  <h4>글쓴글쓴이</h4>
-                                  <p>2018.10.12</p>
-                                  <md-button class="md-icon-button fade" aria-label="Favorite" ng-if='item.isFocused' ng-click='fn.evt.fav.del(item.contentId)' >
-                                    <md-icon md-svg-icon="./assets/icons/favorite.svg" class="favorite-icon selected"></md-icon>
-                                  </md-button>
-                                </div>
-                            </md-list-item>
-                            <md-list-item class='md-2-line' >
-                                <div class="md-list-item-text">
-                                    <div ></div>
-                                  <h3><b>제목제목제목</b></h3>
-                                  <h4>글쓴글쓴이</h4>
-                                  <p>2018.10.12</p>
-                                  <md-button class="md-icon-button fade" aria-label="Favorite" ng-if='item.isFocused' ng-click='fn.evt.fav.del(item.contentId)' >
-                                    <md-icon md-svg-icon="./assets/icons/favorite.svg" class="favorite-icon selected"></md-icon>
-                                  </md-button>
-                                </div>
-                            </md-list-item>
-                        </md-list>
-                      </div>
+                </div>
             </md-content>
           </md-tab>
         </md-tabs>

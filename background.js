@@ -3,7 +3,6 @@
 // 2. 직접 로드
 
 // 옵션 페이지 필요 
-
 let _bg = {
     IDENTIFIERS : {
         MESG : {
@@ -18,6 +17,7 @@ let _bg = {
             GET_CONFIG_DATA : 'GET_CONFIG_DATA',
             GET_META_DATA : 'GET_META_DATA',
             GET_KEYWORDS : 'GET_KEYWORDS',
+            GET_KEYWORD_ITEM : 'GET_KEYWORD_ITEM'
         },
         sync : {
             LAST_UPDATED : 'LAST_UPDATED',
@@ -113,7 +113,7 @@ let _bg = {
     },
     // 키워드 기능 관련
     filter : {
-        keywords : ['동계'],
+        keywords : ['동계' , '봉사' , '토익' , 'ACE'],
         old : {},
         new : {},
         fn : {
@@ -146,6 +146,8 @@ let _bg = {
                         }
                     }
                 }
+
+                
                 deferred.resolve(data, paging);
 
                 return deferred.promise();
@@ -402,5 +404,14 @@ chrome.runtime.onMessage.addListener(function(mesg, sender , sendResponse){
                 });
             });
         }   
+    }
+    else if(mesg.title === _bg.IDENTIFIERS.MESG.GET_KEYWORD_ITEM){
+        chrome.runtime.sendMessage({
+            title : mesg.title,
+            data : {
+                keywords : _bg.filter.keywords,
+                items : _bg.filter.new
+            }
+        });
     }
 });

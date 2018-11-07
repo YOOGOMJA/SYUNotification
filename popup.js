@@ -35,6 +35,10 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
                 { val : 'content' , desc : '내용' }
             ]
         },
+        keyword : {
+            keywords :[],
+            items : {}
+        }
     };
 
     $s.chrome = {
@@ -83,9 +87,18 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
                         $s.mod.search.cate = $s.mod.search.cates[0].val;
                     }
                 }
+                else if(mesg.title === 'GET_KEYWORD_ITEM'){
+                    if(mesg.data){
+                        $s.mod.keyword.keywords = mesg.data.keywords;
+                        $s.mod.keyword.items = mesg.data.items;
+                        console.log('GOTTA DATA!');
+                        console.log($s.mod.keyword);
+                    }
+                }
             });
         }
     }
+
     $s.fn = {
         init : function(){
             // $s.mod.page.items = [1,2,3,4,5];
@@ -98,6 +111,7 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
                 forced : false
             });
             $s.fn.evt.search.init();
+            $s.fn.evt.keyword.init();
         },
         load : function(opt){
             if(!$s.mod.state.loading){
@@ -281,6 +295,17 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
             },
             setFooterState : function(mode){
                 _fn.footer.set(mode);
+            },
+            keyword : {
+                init : function(){
+                    $s.fn.evt.keyword.get();
+                },
+                get : function(){
+                    chrome.runtime.sendMessage({
+                        title : 'GET_KEYWORD_ITEM'
+                    });
+                    console.log('GET KEYWORD ITEM');
+                },
             }
         }
     };
@@ -326,11 +351,14 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
         }
         else if(n === 2){
             // FAVORITE
-            console.log('Hello favorite');
+            // console.log('Hello favorite');
             $s.mod.state.loading = true;
             chrome.runtime.sendMessage({
                 title : 'GET_FAVORITE_ITEM'
             });
+        }
+        else if(n === 3){
+            $s.fn.evt.keyword.get();
         }
     });
     $s.fn.init();
