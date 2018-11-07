@@ -114,8 +114,7 @@ let _bg = {
     // 키워드 기능 관련
     filter : {
         keywords : ['동계' , '봉사' , '토익' , 'ACE'],
-        old : {},
-        new : {},
+        items : {},
         fn : {
             mw : function(data , paging){
 
@@ -128,21 +127,22 @@ let _bg = {
                     return deferred.promise(); 
                 }
 
-                _bg.filter.old = _bg.filter.new;
-                _bg.filter.new = {};
+                for(key in _bg.filter.items){
+                    if(_bg.filter.keywords.indexOf(key) < 0){
+                        delete _bg.filter.items[key];
+                    }
+                }
                 
                 for(idx in _bg.filter.keywords){
                     let keyword = _bg.filter.keywords[idx];
 
-                    _bg.filter.new[keyword] = [];
+                    if(!_bg.filter.items.hasOwnProperty(keyword) || !_bg.filter.items[keyword].length ){
+                        _bg.filter.items[keyword] = [];
+                    }
 
                     for(i in data){
                         if(data[i].title.indexOf(keyword) >= 0){
-                            _bg.filter.new[keyword].push(data[i]);
-                            data[i].isFiltered = true;
-                        }
-                        else{
-                            data[i].isFiltered = false;
+                            _bg.filter.items[keyword].push(data[i]);   
                         }
                     }
                 }
@@ -410,7 +410,7 @@ chrome.runtime.onMessage.addListener(function(mesg, sender , sendResponse){
             title : mesg.title,
             data : {
                 keywords : _bg.filter.keywords,
-                items : _bg.filter.new
+                items : _bg.filter.items
             }
         });
     }
