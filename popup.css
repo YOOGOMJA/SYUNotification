@@ -1,6 +1,10 @@
+html{
+    width : 450px;
+}
 body{
     padding : 0;
     margin:0;
+    position:absolute;
     width : 450px;
     height: 599px!important;
 }

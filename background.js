@@ -179,7 +179,6 @@ let _bg = {
                         _bg.data.last_updated = (new Date()).getTime();
                     });
                 }
-               
             }
         },
         timer : {},
@@ -288,9 +287,19 @@ chrome.runtime.onMessage.addListener(function(mesg, sender , sendResponse){
         });
     }
     else if(mesg.title === _bg.IDENTIFIERS.MESG.GET_FAVORITE_ITEM){
-        chrome.runtime.sendMessage({
-            title : mesg.title,
-            data : _bg.data.favorites
+        // chrome.runtime.sendMessage({
+        //     title : mesg.title,
+        //     data : _bg.data.favorites
+        // });
+        chrome.storage.sync.get(_bg.IDENTIFIERS.sync.FAVORITE_ITEMS, function(item){
+            if(item.hasOwnProperty(_bg.IDENTIFIERS.sync.FAVORITE_ITEMS)){
+                // 요소가 있는 경우 
+                _bg.data.favorites = item[_bg.IDENTIFIERS.sync.FAVORITE_ITEMS];
+            }
+            chrome.runtime.sendMessage({
+                title : mesg.title,
+                data : _bg.data.favorites
+            });
         });
     }
     else if(mesg.title === _bg.IDENTIFIERS.MESG.SET_FAVORITE_ITEM){
@@ -317,15 +326,20 @@ chrome.runtime.onMessage.addListener(function(mesg, sender , sendResponse){
                     mesg : '이미 등록된 항목입니다'
                 });
             }
-            else{
-                _bg.data.favorites.unshift(mesg.item);
-                let si = {};
-                si[_bg.IDENTIFIERS.sync.FAVORITE_ITEMS] = _bg.data.favorites;
-                chrome.storage.sync.set(si , function(){
-                    sendResponse({
-                        state : true,
-                        mesg : '성공했습니다',
-                        items : _bg.data.favorites
+            else{                
+                chrome.storage.sync.get(_bg.IDENTIFIERS.sync.FAVORITE_ITEMS , function(items){
+                    if(items.hasOwnProperty(_bg.IDENTIFIERS.sync.FAVORITE_ITEMS)){
+                        _bg.data.favorites = items[_bg.IDENTIFIERS.sync.FAVORITE_ITEMS];
+                    }
+                    _bg.data.favorites.unshift(mesg.item);
+                    let si = {};
+                    si[_bg.IDENTIFIERS.sync.FAVORITE_ITEMS] = _bg.data.favorites;
+                    chrome.storage.sync.set(si , function(){
+                        sendResponse({
+                            state : true,
+                            mesg : '성공했습니다',
+                            items : _bg.data.favorites
+                        });
                     });
                 });
             }
@@ -333,7 +347,9 @@ chrome.runtime.onMessage.addListener(function(mesg, sender , sendResponse){
     }
     else if(mesg.title === _bg.IDENTIFIERS.MESG.DEL_FAVORITE_ITEM){
         chrome.storage.sync.get(_bg.IDENTIFIERS.sync.FAVORITE_ITEMS , function(item){
-            _bg.data.favorites = item[_bg.IDENTIFIERS.sync.FAVORITE_ITEMS] ? item[_bg.IDENTIFIERS.sync.FAVORITE_ITEMS] : [];
+            if(item.hasOwnProperty(_bg.IDENTIFIERS.sync.FAVORITE_ITEMS)){
+               _bg.data.favorites = item[_bg.IDENTIFIERS.sync.FAVORITE_ITEMS]; 
+            }
 
             for(var i = 0 ; i < _bg.data.favorites.length; i++){
                 if(_bg.data.favorites[i].contentId === mesg.contentId){
@@ -354,7 +370,9 @@ chrome.runtime.onMessage.addListener(function(mesg, sender , sendResponse){
     }
     else if(mesg.title === _bg.IDENTIFIERS.MESG.GET_HISTORY_ITEM){
         chrome.storage.sync.get(_bg.IDENTIFIERS.sync.HISTORY_ITEMS, function(item){
-            _bg.data.histories = item[_bg.IDENTIFIERS.sync.HISTORY_ITEMS];
+            if(item.hasOwnProperty(_bg.IDENTIFIERS.sync.HISTORY_ITEMS)){
+                _bg.data.histories = item[_bg.IDENTIFIERS.sync.HISTORY_ITEMS];
+            }
 
             chrome.runtime.sendMessage({
                 title : mesg.title ,
@@ -364,28 +382,25 @@ chrome.runtime.onMessage.addListener(function(mesg, sender , sendResponse){
     }
     else if(mesg.title === _bg.IDENTIFIERS.MESG.SET_HISTORY_ITEM){
         if(mesg.item){
-            mesg.item.watched_date = (new Date()).getTime();
-            // _bg.data.histories.push(mesg.item);
-            _bg.data.histories.unshift(mesg.item);
-            if(_bg.data.histories.length >= 10){
-                while(_bg.histories.length != 10){
-                    _bg.histories.pop();
+            chrome.storage.sync.get(_bg.IDENTIFIERS.sync.HISTORY_ITEMS , function(item){
+                if(item.hasOwnProperty(_bg.IDENTIFIERS.sync.HISTORY_ITEMS)){
+                    _bg.data.histories = item[_bg.IDENTIFIERS.sync.HISTORY_ITEMS];
                 }
+                mesg.item.watched_date = (new Date()).getTime();
+                _bg.data.histories.unshift(mesg.item);
                 
-                if(!item.hasOwnProperty(_bg.IDENTIFIERS.sync.HISTORY_ITEMS)){
-                    _bg.data.histories = [];
+                if(_bg.data.histories.length == 10){
+                    while(_bg.data.histories.length > 10){
+                        _bg.histories.pop();
+                    }
                 }
-                if(!_bg.data.histories.unshift){ 
-                    _bg.data.histories = []; 
-                }
-
                 let sync_items = {};
                 sync_items[_bg.IDENTIFIERS.sync.HISTORY_ITEMS] = _bg.data.histories;
-
+    
                 chrome.storage.sync.set(sync_items , function(){
                     // updated
                 });
-            }
+            });
         }   
     }
 });
