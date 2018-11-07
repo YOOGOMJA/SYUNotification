@@ -283,7 +283,7 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
                 _fn.footer.set(mode);
             }
         }
-    }
+    };
 
     var _fn ={
         footer : {
@@ -332,8 +332,7 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
                 title : 'GET_FAVORITE_ITEM'
             });
         }
-    })
-
+    });
     $s.fn.init();
 }])
 .filter('frmDate', function(){
@@ -342,7 +341,7 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
         _dt = moment(_dt);
 
         return _dt.format('YYYY-MM-DD');
-    }
+    };
 })
 .filter('frmLongDate', function(){
     return function(dateStr){
@@ -350,5 +349,5 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
         _dt = moment(_dt);
 
         return _dt.format('YYYY-MM-DD HH:MM:SS');
-    }
+    };
 });

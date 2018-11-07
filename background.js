@@ -51,29 +51,28 @@ let _bg = {
 
             },
             makeNotification : function(hasNewItems){
-                if(hasNewItems){
+                if(hasNewItems){                
                     let ct = '';
                     let msg = '';
-
+                    
                     if(_bg.noti.new.length > 1){
                         msg += _bg.noti.new[0].title.slice(0,20);
-                        msg += '.. 외 ' + _bg.noti.new.length - 1 + '건';
+                        msg += '.. 외 ' + (_bg.noti.new.length - 1) + '건';
                         ct = '학사공지에 새로운 글이 올라왔습니다!';
                     }
                     else{
                         msg += _bg.noti.new[0].title;
                         ct = '학사공지에 새로운 글이 올라왔습니다!';
                     }
-
+                    
                     chrome.notifications.create({
                         type : 'basic',
                         iconUrl : '../assets/logo@128.png',
-                        title : 'SYU Notification',
-                        context : ct,
+                        // title : 'SYU Notification',
+                        title : ct,
                         message : msg
                     });
                 }
-                
             },
             mw : function(data, paging){
                 let deferred = jQuery.Deferred();
@@ -104,8 +103,8 @@ let _bg = {
                         }
                     }
                 }
-
-                _bg.noti.fn.makenotification(hasNewItems);
+                // _bg.noti.fn.makenotification(hasNewItems);
+                _bg.noti.fn.makeNotification(hasNewItems);
 
                 deferred.resolve(data , paging);
                 return deferred.promise();
@@ -174,8 +173,9 @@ let _bg = {
                         for(key in _bg.data.stored.paging){
                             delete _bg.data.stored.paging[key];
                         }
-                        _bg.data.stored.item['page1'] = data;
+                        _bg.data.stored.items['page1'] = data;
                         _bg.data.stored.paging['page1'] = paging;
+                        
                         _bg.data.last_updated = (new Date()).getTime();
                     });
                 }
@@ -184,7 +184,7 @@ let _bg = {
         },
         timer : {},
         // m sec
-        interval_time : 1000 * 60
+        interval_time : 1000 * 60 * 30
     },
 };
 
@@ -192,6 +192,11 @@ let _bg = {
 // INSTALLED
 chrome.runtime.onInstalled.addListener(function() {
     _bg.data.states = _bg.IDENTIFIERS.states.IDLE;    
+    
+});
+
+jQuery(function(){
+    _bg.crawler.fn.init();
 });
 
 chrome.runtime.onMessage.addListener(function(mesg, sender , sendResponse){
