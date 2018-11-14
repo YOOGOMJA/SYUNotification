@@ -378,4 +378,53 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
 
         return _dt.format('YYYY-MM-DD HH:MM:SS');
     };
+}).directive('rptLastItem', function() {
+    return function(scope, element, attrs) {
+        // angular.element(element).css('color','blue');
+        if (scope.$last){
+            if(attrs['rptLastItem'] === 'true'){
+                var list = jQuery('.list.keyword');
+                var list_children = list.children();
+                for(var idx = 0 ; idx < list_children.length ; idx++){
+                    var item = list_children.eq(idx);
+                    item.find('.header').attr('data-position-top' , item.find('.header').position().top);
+                }
+                list.unbind('scroll');
+                // list.bind('scroll' , e => {
+                //     for(var idx = 0 ; idx < list_children.length ; idx++){
+                //         var position_top = Number(list_children.eq(idx).find('.header').attr('data-position-top'));
+                //         var item = list_children.eq(idx).find('.header');
+                //         console.log(position_top , e.target.scrollTop);
+                //         if(e.target.scrollTop >= position_top){
+                //             // console.log('idx : ' + idx + ' is not same');
+                //             if(item.css('position') !== 'fixed'){
+                //                 item.css({
+                //                     'position' : 'fixed',
+                //                     'top' : (idx * 33) + 'px',
+                //                     'width' : '100%',
+                //                     'z-index' : 10
+                //                 });
+                //                 list_children.eq(idx).css({
+                //                     'padding-top' : '33px'
+                //                 });
+                //             }
+                //         }
+                //         else{
+                //             if(item.css('position') === 'fixed'){
+                //                 item.css({
+                //                     'position' : '',
+                //                     'top' : '',
+                //                     'width' : '',
+                //                     'z-index' : ''
+                //                 });
+                //                 list_children.eq(idx).css({
+                //                     'padding-top' : ''
+                //                 });
+                //             }
+                //         }
+                //     }
+                // });
+            }
+        }
+    };
 });

@@ -1,0 +1,99 @@
+<html data-ng-app='optApp'>
+    <head>
+        <title>
+            설정 - SYUNotification
+        </title>
+        <link rel="icon" type="image/png" href="./assets/logo@128.png"> 
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script type='text/javascript' src='./bower_components/jQuery/dist/jquery.min.js'></script>
+        <script type='text/javascript' src='./bower_components/angular/angular.min.js'></script>
+        <script type="text/javascript" src="./bower_components/angular-animate/angular-animate.min.js"></script>
+        <script type="text/javascript" src='./bower_components/angular-aria/angular-aria.min.js'></script>
+        <script type='text/javascript' src='./bower_components/angular-messages/angular-messages.min.js'></script>
+        <script type='text/javascript' src='./bower_components/angular-material/angular-material.min.js'></script>
+        <!-- <script type="text/javascript" src='./bower_components/bootstrap/dist/js/bootstrap.min.js'></script> -->
+        <script type="text/javascript" src='./bower_components/moment/min/moment-with-locales.js'></script>
+
+        <Script type='text/javascript' src='./option.js'></Script>
+
+        <!-- <link rel='stylesheet' href='./bower_components/bootstrap/dist/css/bootstrap.css'> -->
+        <link rel='stylesheet' href='./bower_components/angular-material/angular-material.css'/>
+        <link rel='stylesheet' href='./option.css'/>
+    </head>
+    <body data-ng-controller='optCtrl' class='content-option'>
+        <div layout="column" layout-align="center center" class='option-container'>
+            <div layout='row' layout-align='start center' layout-wrap class='row-container header'>
+                <div class='logo'></div>
+                <div class='title'><b>설정</b> - SYU Notification</div>
+            </div>
+            <div layout='row' layout-align='space-around center' layout-wrap class='row-container'>
+                <div flex='40'>
+                    자동 불러오기:
+                </div>
+                <div flex='60'>
+                
+                    <md-switch class="md-primary" name="crawler_state" ng-model="mod.crawler.state" aria-label='crawler_state'>
+                    </md-switch>
+                </div>
+            </div>
+            <div layout='row' layout-align='space-around center' layout-wrap class='row-container period' >
+                <div flex='40'>
+                    자동 불러오기 주기(분):
+                </div>
+                <div flex='60'>
+                    <form name='periodForm'>
+                        <md-input-container class="md-block" flex-gt-sm >
+                            <label>주기</label>
+                            <input name='period' ng-model="mod.crawler.period" type='number' step='1' min='0' max='180' ng-disabled='!mod.crawler.state'>
+                            <div ng-messages="periodForm.period.$error">
+                                <div ng-message="min">
+                                    주기는 0보다 작을 수 없습니다
+                                </div>
+                                <div ng-message="max">
+                                    주기는 180보다 클 수 없습니다
+                                </div>
+                            </div>
+                        </md-input-container>
+                    </form>
+                    
+                    
+                </div>
+            </div>
+            <div layout='row' layout-align='space-around center' layout-wrap class='row-container'>
+                <div flex='40'>
+                    키워드:
+                </div>
+                <div flex='60'>
+                    <form name="keywordForm">
+                        <md-chips ng-model="mod.keywords" name="keywordName"
+                                md-removable="removable" md-max-chips="4" placeholder="키워드를 입력해주세요">
+                            <md-chip-template>
+                            <strong>{{$chip}}</strong>
+                            </md-chip-template>
+                        </md-chips>
+                        <div class="errors" ng-messages="keywordForm.keywordName.$error">
+                            <div ng-message="md-max-chips">Maximum number of chips reached.</div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div layout='row' layout-align='end center' layout-wrap class='row-container btns'>
+                <div flex='100' style=''>
+                    <md-button class="md-raised md-primary" ng-click='fn.evt.save()'>저장</md-button>
+                    <md-button class="md-raised " ng-click='fn.evt.cancel()'>취소</md-button>
+                </div>
+            </div>
+        </div>
+    </body>
+    <footer >
+        <h5>
+            Copyright (c) 2018 KyeongSoo Yoo.
+        </h5>
+        <div class='links' layout='row' layout-align='center center'>
+            <a title='깃허브' href='https://github.com/yoogomja/syunotification' target='_blank'><div class='github'></div></a>
+            <a title='티스토리' href='http://yoogomja.tistory.com' target='_blank'><div class='blog'></div></a>
+            <a title='포트폴리오 사이트' href='http://gomjalog.herokuapp.com' target='_blank'><div class='blog'></div></a>
+        </div>
+    </footer>
+</html>

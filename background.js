@@ -15,6 +15,7 @@ let _bg = {
             DEL_HISTORY_ITEM : 'DEL_HISTORY_ITEM',
             DEL_FAVORITE_ITEM : 'DEL_FAVORITE_ITEM',
             GET_CONFIG_DATA : 'GET_CONFIG_DATA',
+            SET_CONFIG_DATA : 'SET_CONFIG_DATA',
             GET_META_DATA : 'GET_META_DATA',
             GET_KEYWORDS : 'GET_KEYWORDS',
             GET_KEYWORD_ITEM : 'GET_KEYWORD_ITEM'
@@ -23,7 +24,10 @@ let _bg = {
             LAST_UPDATED : 'LAST_UPDATED',
             FAVORITE_ITEMS : 'FAVORITE_ITEMS',
             HISTORY_ITEMS : 'HISTORY_ITEMS',
-            INTERVAL : 'INTERVAL'
+            INTERVAL : 'INTERVAL',
+            KEYWORDS : 'KEYWORDS',
+            CRAWLER_STATE : 'CRAWLER_STATE',
+            CRAWLER_PERIOD : 'CRAWLER_PERIOD',
         },
         states : {
             REQUESTING : 'REQUESTING',
@@ -113,20 +117,16 @@ let _bg = {
     },
     // 키워드 기능 관련
     filter : {
-        keywords : ['동계' , '봉사' , '토익' , 'ACE'],
+        keywords : [],
         items : {},
         fn : {
             mw : function(data , paging){
-
-                console.log(data , paging);
-
                 let deferred = jQuery.Deferred();
 
                 if(_bg.filter.keywords.length <= 0){ 
                     deferred.resolve(data , paging);
                     return deferred.promise(); 
                 }
-
                 for(key in _bg.filter.items){
                     if(_bg.filter.keywords.indexOf(key) < 0){
                         delete _bg.filter.items[key];
@@ -135,35 +135,72 @@ let _bg = {
                 
                 for(idx in _bg.filter.keywords){
                     let keyword = _bg.filter.keywords[idx];
-
                     if(!_bg.filter.items.hasOwnProperty(keyword) || !_bg.filter.items[keyword].length ){
                         _bg.filter.items[keyword] = [];
                     }
-
                     for(i in data){
                         if(data[i].title.indexOf(keyword) >= 0){
                             _bg.filter.items[keyword].push(data[i]);   
                         }
                     }
-                }
-
-                
+                }                
                 deferred.resolve(data, paging);
-
                 return deferred.promise();
             }
         }
     },
     crawler : {
+        mod : {
+            state : true,
+            period : 30,
+            min : 1000 * 60,
+            hour : 1000 * 60 * 60,
+            day : 1000 * 60 * 60 * 24,
+        },
         fn : {
             init : function(){
-                // 먼저 작동하던 인터벌은 삭제 
-                window.clearInterval(_bg.crawler.timer);
-                _bg.crawler.timer = window.setInterval(_bg.crawler.fn.tick , _bg.crawler.interval_time);
-                console.log('Background Load Module Initialized');
+                chrome.storage.sync.get([
+                    _bg.IDENTIFIERS.sync.KEYWORDS,
+                    _bg.IDENTIFIERS.sync.CRAWLER_STATE,
+                    _bg.IDENTIFIERS.sync.CRAWLER_PERIOD
+                ] , function(data){
+                    let setting_first = false;
+                    let setting_data = {};
+                    if(!data.hasOwnProperty(_bg.IDENTIFIERS.sync.KEYWORDS)){
+                        _bg.filter.keywords = [];
+                        setting_first = true;
+                        setting_data[_bg.IDENTIFIERS.sync.KEYWORDS] = _bg.filter.keywords;
+                    }
+                    else{
+                        _bg.filter.keywords = data[_bg.IDENTIFIERS.sync.KEYWORDS];
+                    }
+                    if(!data.hasOwnProperty(_bg.IDENTIFIERS.sync.CRAWLER_STATE)){
+                        _bg.crawler.mod.period = 30;
+                        _bg.crawler.mod.state = true;    
+                        setting_first = true;
+                        setting_data[_bg.IDENTIFIERS.sync.CRAWLER_STATE] = true;
+                        setting_data[_bg.IDENTIFIERS.sync.CRAWLER_PERIOD] = 30;
+                    }
+                    else{
+                        _bg.crawler.mod.state = data[_bg.IDENTIFIERS.sync.CRAWLER_STATE];
+                        _bg.crawler.mod.period = data[_bg.IDENTIFIERS.sync.CRAWLER_PERIOD];
+                    }
+
+                    if(setting_first){
+                        chrome.storage.sync.set(setting_data, function(){
+                            window.clearInterval(_bg.crawler.timer);
+                            _bg.crawler.timer = window.setInterval(_bg.crawler.fn.tick , _bg.crawler.mod.min * _bg.crawler.mod.period);
+                        });
+                    }
+                    else{
+                        window.clearInterval(_bg.crawler.timer);
+                        _bg.crawler.timer = window.setInterval(_bg.crawler.fn.tick , _bg.crawler.mod.min * _bg.crawler.mod.period);
+                    }
+                });
+
             },
             tick : function(){
-                if(_bg.data.states !== _bg.IDENTIFIERS.states.REQUESTING){
+                if(_bg.crawler.mod.state && _bg.data.states !== _bg.IDENTIFIERS.states.REQUESTING){
                     _Crawler.load(1, '', '', '')
                     .then(_bg.filter.fn.mw)
                     .then(_bg.noti.fn.mw)
@@ -181,11 +218,13 @@ let _bg = {
                         _bg.data.last_updated = (new Date()).getTime();
                     });
                 }
+            },
+            clear : function(){
+                clearInterval(_bg.crawler.timer);
             }
         },
         timer : {},
         // m sec
-        interval_time : 1000 * 60 * 30
     },
 };
 
@@ -213,6 +252,63 @@ chrome.runtime.onMessage.addListener(function(mesg, sender , sendResponse){
     else if(mesg.title === _bg.IDENTIFIERS.MESG.GET_CONFIG_DATA)
     {
         // 키워드 관련 추가할 것 
+        chrome.storage.sync.get([
+            _bg.IDENTIFIERS.sync.KEYWORDS,
+            _bg.IDENTIFIERS.sync.CRAWLER_STATE,
+            _bg.IDENTIFIERS.sync.CRAWLER_PERIOD
+        ] , function(data){
+            let setting_first = false;
+            let setting_data = {};
+            if(!data.hasOwnProperty(_bg.IDENTIFIERS.sync.KEYWORDS)){
+                _bg.filter.keywords = [];
+                setting_first = true;
+                setting_data[_bg.IDENTIFIERS.sync.KEYWORDS] = _bg.filter.keywords;
+            }
+            if(!data.hasOwnProperty(_bg.IDENTIFIERS.sync.CRAWLER_STATE)){
+                _bg.crawler.mod.period = 30;
+                _bg.crawler.mod.state = true;    
+                setting_first = true;
+                setting_data[_bg.IDENTIFIERS.sync.CRAWLER_STATE] = true;
+                setting_data[_bg.IDENTIFIERS.sync.CRAWLER_PERIOD] = 30;
+            }
+            
+            if(setting_first){
+                chrome.storage.sync.set(setting_data, function(data){
+                    chrome.runtime.sendMessage({
+                        title : _bg.IDENTIFIERS.MESG.GET_CONFIG_DATA,
+                        data : data
+                    });
+                });
+            }
+            else{
+                chrome.runtime.sendMessage({
+                    title : _bg.IDENTIFIERS.MESG.GET_CONFIG_DATA,
+                    data : data
+                });
+            }
+        });
+    }
+    else if(mesg.title === _bg.IDENTIFIERS.MESG.SET_CONFIG_DATA){
+        let setting_data = {};
+
+        _bg.filter.keywords = mesg.data.keywords;
+        _bg.crawler.mod.state = mesg.data.crawler_state;
+        _bg.crawler.mod.period = mesg.data.crawler_period;
+
+        setting_data[_bg.IDENTIFIERS.sync.KEYWORDS] = _bg.filter.keywords;
+        setting_data[_bg.IDENTIFIERS.sync.CRAWLER_STATE] = _bg.crawler.mod.state;
+        setting_data[_bg.IDENTIFIERS.sync.CRAWLER_PERIOD] = _bg.crawler.mod.period;
+
+        chrome.storage.sync.set(setting_data , function(){
+            _bg.data.stored.items = {};
+            _bg.data.stored.paging = {};
+            chrome.runtime.sendMessage({
+                title : mesg.title
+            });
+            
+            window.clearInterval(_bg.crawler.timer);
+            _bg.crawler.timer = window.setInterval(_bg.crawler.fn.tick , _bg.crawler.mod.min * _bg.crawler.mod.period);
+        });
     }
     else if(mesg.title === _bg.IDENTIFIERS.MESG.GET_BOARD_ITEM){
         if(mesg.cate !== '' || mesg.type !== '' || mesg.keyword !== ''){   
@@ -289,10 +385,7 @@ chrome.runtime.onMessage.addListener(function(mesg, sender , sendResponse){
         });
     }
     else if(mesg.title === _bg.IDENTIFIERS.MESG.GET_FAVORITE_ITEM){
-        // chrome.runtime.sendMessage({
-        //     title : mesg.title,
-        //     data : _bg.data.favorites
-        // });
+        
         chrome.storage.sync.get(_bg.IDENTIFIERS.sync.FAVORITE_ITEMS, function(item){
             if(item.hasOwnProperty(_bg.IDENTIFIERS.sync.FAVORITE_ITEMS)){
                 // 요소가 있는 경우 
@@ -321,7 +414,6 @@ chrome.runtime.onMessage.addListener(function(mesg, sender , sendResponse){
                     break;
                 }
             }
-            
             if(isDuplicated){
                 sendResponse({
                     state : false,
@@ -375,7 +467,6 @@ chrome.runtime.onMessage.addListener(function(mesg, sender , sendResponse){
             if(item.hasOwnProperty(_bg.IDENTIFIERS.sync.HISTORY_ITEMS)){
                 _bg.data.histories = item[_bg.IDENTIFIERS.sync.HISTORY_ITEMS];
             }
-
             chrome.runtime.sendMessage({
                 title : mesg.title ,
                 data : _bg.data.histories
@@ -391,9 +482,9 @@ chrome.runtime.onMessage.addListener(function(mesg, sender , sendResponse){
                 mesg.item.watched_date = (new Date()).getTime();
                 _bg.data.histories.unshift(mesg.item);
                 
-                if(_bg.data.histories.length == 10){
+                if(_bg.data.histories.length >= 10){
                     while(_bg.data.histories.length > 10){
-                        _bg.histories.pop();
+                        _bg.data.histories.pop();
                     }
                 }
                 let sync_items = {};
