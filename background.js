@@ -54,29 +54,27 @@ let _bg = {
             init : function(){
 
             },
-            makeNotification : function(hasNewItems){
-                if(hasNewItems){                
-                    let ct = '';
-                    let msg = '';
-                    
-                    if(_bg.noti.new.length > 1){
-                        msg += _bg.noti.new[0].title.slice(0,20);
-                        msg += '.. 외 ' + (_bg.noti.new.length - 1) + '건';
-                        ct = '학사공지에 새로운 글이 올라왔습니다!';
-                    }
-                    else{
-                        msg += _bg.noti.new[0].title;
-                        ct = '학사공지에 새로운 글이 올라왔습니다!';
-                    }
-                    
-                    chrome.notifications.create({
-                        type : 'basic',
-                        iconUrl : '../assets/logo@128.png',
-                        // title : 'SYU Notification',
-                        title : ct,
-                        message : msg
-                    });
+            makeNotification : function(){        
+                let ct = '';
+                let msg = '';
+                
+                if(_bg.noti.new.length > 1){
+                    msg += _bg.noti.new[0].title.slice(0,20);
+                    msg += '.. 외 ' + (_bg.noti.new.length - 1) + '건';
+                    ct = '학사공지에 새로운 글이 올라왔습니다!';
                 }
+                else{
+                    msg += _bg.noti.new[0].title;
+                    ct = '학사공지에 새로운 글이 올라왔습니다!';
+                }
+                
+                chrome.notifications.create({
+                    type : 'basic',
+                    iconUrl : '../assets/logo@128.png',
+                    // title : 'SYU Notification',
+                    title : ct,
+                    message : msg
+                });
             },
             mw : function(data, paging){
                 let deferred = jQuery.Deferred();
@@ -84,31 +82,14 @@ let _bg = {
                 _bg.noti.old = _bg.noti.new.slice(0,_bg.noti.new.length);
                 _bg.noti.new = [];
                 for(let idx in data){
-                    if(data[idx].isNew || data[idx].isNotice){
-                        _bg.noti.new.push(data[idx]);
+                    if(data[idx].isNew && _bg.noti.old.indexOf(data[idx].contentId) < 0){
+                        // 새로운 아이템이고 이전에 저장된 적이 없을 경우
+                        _bg.noti.new.push(data[idx].contentId);
                     }
                 }
-                
-                let hasNewItems = false;
-                if(_bg.noti.old.length === 0 && _bg.noti.new.length > 0){
-                    hasNewItems = true;
+                if(_bg.noti.new.length > 0){
+                    _bg.noti.fn.makeNotification(hasNewItems);
                 }
-                else if(_bg.noti.old.length !== _bg.noti.new.length && _bg.noti.new.length > 0){
-                    hasNewItems = true;
-                }
-                else{
-                    if(_bg.noti.new.length > 0){
-                        for(let idx_old in _bg.noti.old){
-                            for(let idx_new in _bg.noti.new){
-                                if(_bg.noti.old[idx_old].contentId !== _bg.noti.new[idx_new].contentId){
-                                    hasNewItems = true;
-                                }
-                            }
-                        }
-                    }
-                }
-                // _bg.noti.fn.makenotification(hasNewItems);
-                _bg.noti.fn.makeNotification(hasNewItems);
 
                 deferred.resolve(data , paging);
                 return deferred.promise();

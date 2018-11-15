@@ -57,6 +57,8 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
                     var _tmp = moment(mesg.data.last_updated);
                     $s.mod.last_updated_txt = _tmp.fromNow();
                     
+                    console.log($s.mod);
+
                     $s.$apply();
                 }
                 else if(mesg.title == 'GET_HISTORY_ITEM'){
