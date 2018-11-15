@@ -68,7 +68,6 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
                 else if(mesg.title === 'GET_FAVORITE_ITEM'){
                     $s.mod.state.loading = false;
                     $s.mod.favorites = mesg.data;
-                    console.log(mesg);
                     $s.$apply();
                 }
                 else if(mesg.title == 'GET_LAST_UPDATED'){
@@ -80,7 +79,6 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
                 }
                 else if(mesg.title == 'GET_META_DATA'){
                     if(mesg.data){
-                        // console.log(mesg);
                         $s.mod.search.types = mesg.data.types;
                         $s.mod.search.type = $s.mod.search.types[0].val;
                         $s.mod.search.cates = mesg.data.categories;
@@ -91,8 +89,6 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
                     if(mesg.data){
                         $s.mod.keyword.keywords = mesg.data.keywords;
                         $s.mod.keyword.items = mesg.data.items;
-                        console.log('GOTTA DATA!');
-                        console.log($s.mod.keyword);
                     }
                 }
             });
@@ -304,7 +300,6 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
                     chrome.runtime.sendMessage({
                         title : 'GET_KEYWORD_ITEM'
                     });
-                    console.log('GET KEYWORD ITEM');
                 },
             }
         }
@@ -343,7 +338,6 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
         }
         else if(n === 1){
             // HISTORY
-            console.log('hello histories');
             $s.mod.state.loading = true;
             chrome.runtime.sendMessage({
                 title : 'GET_HISTORY_ITEM'
@@ -351,7 +345,6 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
         }
         else if(n === 2){
             // FAVORITE
-            // console.log('Hello favorite');
             $s.mod.state.loading = true;
             chrome.runtime.sendMessage({
                 title : 'GET_FAVORITE_ITEM'
