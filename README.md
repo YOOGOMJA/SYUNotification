@@ -13,6 +13,27 @@
   bower install -- 필요한 스크립트들을 설치합니다.
 </pre>
 
+## Structure
+
+### Chrome Extension 
+- background.js 
+- option.css / options.html / option.js
+- popup.css / popup.html / popup.js
+- manifest.json
+
+### resource
+- COM_QUERIES.js : 주소 쿼리스트링 조작
+- crawler.js : 실제 크롤링 부 
+
+## 0. Update
+
+# v1.0.0
+- 메이저 업데이트 되었습니다
+- 기존 홈페이지 리뉴얼 반영
+- 자동 조회 기능 추가
+- 옵션 페이지 추가
+- 키워드 설정 및 필터링 기능 추가
+
 ## 1. 예제
 
 ![Alt text](https://github.com/YOOGOMJA/SYUNotification/blob/material/syunoti_demo.gif?raw=true "사용예제")
@@ -35,6 +56,18 @@
 리스트에서 하트 모양을 클릭하면 즐겨찾기에 등록할 수 있습니다.
 이렇게 등록된 항목은 즐겨찾기 탭에서 확인할 수 있고, 최대 10개까지 등록됩니다.
 이 정보는 기기간에 공유됩니다. 
+
+### 2.4 자동 조회 & 푸시 메시지
+
+자동 조회 기능이 추가되었습니다. 최소 1분 최대 180분마다 데이터를 자동으로 불러옵니다
+자동으로 불러와진 데이터에서 새글이 올라왔다면 push로 알려줍니다.
+설정에서 on/off하거나 조회 시간을 설정할 수 있습니다.
+
+### 2.5 키워드 필터링
+
+지정한 키워드에 해당하는 텍스트가 제목에 포함되어있는 경우 따로 모아서 보여줍니다.
+이미 읽은 데이터를 기준으로 조회해오기때문에, 데이터 표본이 적다면 데이터가 나타나지
+않을 수 도 있습니다.
 
 ## Frameworks & Libraries
 
