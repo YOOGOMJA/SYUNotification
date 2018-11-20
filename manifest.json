@@ -1,8 +1,8 @@
 {
-    "name": "SYUNoti",
-    "description" : "삼육대학교 공지사항 알림",
-    "version": "1.0.0",
-    "manifest_version": 2,
+    "name": "SYUNotification",
+    "description" : "삼육대학교 학사정보 알림",
+    "version": "1.0.2",
+    "manifest_version": 3,
     "browser_action": {
         "default_popup": "popup.html",
         "default_icon" :{
@@ -27,9 +27,9 @@
         "page": "options.html",
         "open_in_tab": true
     },
-    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+    "content_security_policy": "script-src 'self' 'unsafe-eval' https://www.google-analytics.com; object-src 'self'",
     "permissions" : [
-        "<all_urls>" , "storage" , "tabs" , "notifications"
+        "https://new.syu.ac.kr/*" ,"https://www.googletagmanager.com/*", "storage" , "tabs" , "notifications"
     ]
   }
 

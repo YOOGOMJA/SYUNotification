@@ -1,5 +1,5 @@
 angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
-.controller('popCtrl' , ['$scope' , '$http' , '$mdDialog' , function($s , $http, $mdDialog){
+.controller('popCtrl' , ['$scope' , '$http' , '$mdDialog', '$q' , function($s , $http, $mdDialog , $q){
     
     $s.mod = {
         IDENTIFIERS : {
@@ -112,6 +112,7 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
             $s.fn.evt.keyword.init();
         },
         load : function(opt){
+            let deferred = $q.defer();
             if(!$s.mod.state.loading){
                 $s.mod.state.loading = true;
                 chrome.runtime.sendMessage({ 
@@ -121,8 +122,12 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
                     type : opt.type ? opt.type : '',
                     keyword : opt.keyword ? opt.keyword : '',
                     forced : opt.forced
-                });    
+                } , function(){
+                    deferred.resolve($s.mod);
+                });
             }
+
+            return deferred.promise;
         },
         evt : {
             
@@ -132,11 +137,14 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
                 $s.fn.load({
                     page : $s.mod.page.current,
                     forced : true
-                });
+                })
+                .then($s.fn.evt.keyword.get);
 
                 $s.mod.state.searched = false;
                 $s.mod.state.isSearchMode = false;
                 $s.fn.evt.search.init();
+
+            
             },
             page : {
                 next : function(){
