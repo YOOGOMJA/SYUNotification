@@ -63,7 +63,6 @@ let _Crawler = (function(jQuery){
             mod.dom = jQuery(dom);
 
             // DATA
-
             mod.tbl = mod.dom.find(meta.css.root);
             let dfd = jQuery.Deferred();
             if(mod.tbl === '' || mod.tbl.length <= 0){
@@ -158,7 +157,14 @@ let _Crawler = (function(jQuery){
             // 1. get
             // 2. fetch
             return fn.get(data)
-            .then(fn.fetch);
+            .then(fn.fetch)
+            .then(function(d , p){
+                let _d = jQuery.Deferred();
+
+                _d.resolve(d, p , data);
+
+                return _d.promise();
+            });
         }
     }
 
@@ -170,6 +176,7 @@ let _Crawler = (function(jQuery){
             _data[meta.query.type] = opt.type;
             _data[meta.query.keyword] = opt.keyword;
             _data.page = opt.page;
+            _data.forced = opt.forced || false;
 
             return fn.load(_data);
         },

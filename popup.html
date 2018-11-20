@@ -164,6 +164,15 @@
           </md-tab>
           <md-tab label="KEYWORD" ng-value='KEYWORD'>
             <md-content flex class='list not-notice keyword'>
+                <div class='empty' ng-if='mod.keyword.keywords.length <= 0'>
+                  <h2>
+                    등록된 키워드가 없습니다
+                  </h2>
+                  <h4>
+                    키워드를 추가해주세요.<br/>
+                    <md-button class="md-raised md-primary " style='margin-top:140px;' ng-click='fn.evt.openOption()'>설정으로</md-button>
+                  </h4>
+                </div>
                 <div class='keyword container' ng-repeat='keyword in mod.keyword.keywords '>
                     <div class='header' ng-bind='keyword'></div>
                     <md-list flex class='md-dense'>

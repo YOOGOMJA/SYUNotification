@@ -76,22 +76,23 @@ let _bg = {
                     message : msg
                 });
             },
-            mw : function(data, paging){
+            mw : function(data, paging, prms){
                 let deferred = jQuery.Deferred();
 
                 _bg.noti.old = _bg.noti.new.slice(0,_bg.noti.new.length);
                 _bg.noti.new = [];
                 for(let idx in data){
-                    if(data[idx].isNew && _bg.noti.old.indexOf(data[idx].contentId) < 0){
+                    // if(data[idx].isNew && _bg.noti.old.indexOf(data[idx].contentId) < 0){
+                    if(data[idx].isNew){
                         // 새로운 아이템이고 이전에 저장된 적이 없을 경우
-                        _bg.noti.new.push(data[idx].contentId);
+                        _bg.noti.new.push(data[idx]);
                     }
                 }
                 if(_bg.noti.new.length > 0){
-                    _bg.noti.fn.makeNotification(hasNewItems);
+                    _bg.noti.fn.makeNotification();
                 }
-
-                deferred.resolve(data , paging);
+                // console.log(_bg.noti , data);
+                deferred.resolve(data , paging, prms);
                 return deferred.promise();
             }
         }
@@ -101,18 +102,25 @@ let _bg = {
         keywords : [],
         items : {},
         fn : {
-            mw : function(data , paging){
+            mw : function(data , paging, prms){
                 let deferred = jQuery.Deferred();
 
-                if(_bg.filter.keywords.length <= 0){ 
-                    deferred.resolve(data , paging);
-                    return deferred.promise(); 
+                if(prms.forced){
+                    _bg.filter.items = {};
                 }
-                for(key in _bg.filter.items){
-                    if(_bg.filter.keywords.indexOf(key) < 0){
-                        delete _bg.filter.items[key];
+                else{
+                    for(key in _bg.filter.items){
+                        if(_bg.filter.keywords.indexOf(key) < 0){
+                            delete _bg.filter.items[key];
+                        }
                     }
                 }
+
+                if(_bg.filter.keywords.length <= 0){ 
+                    deferred.resolve(data , paging, prms);
+                    return deferred.promise(); 
+                }
+                
                 
                 for(idx in _bg.filter.keywords){
                     let keyword = _bg.filter.keywords[idx];
@@ -125,7 +133,7 @@ let _bg = {
                         }
                     }
                 }                
-                deferred.resolve(data, paging);
+                deferred.resolve(data, paging, prms);
                 return deferred.promise();
             }
         }
@@ -181,6 +189,7 @@ let _bg = {
 
             },
             tick : function(){
+                console.log('tick');
                 if(_bg.crawler.mod.state && _bg.data.states !== _bg.IDENTIFIERS.states.REQUESTING){
                     _Crawler.load(1, '', '', '')
                     .then(_bg.filter.fn.mw)
@@ -273,6 +282,7 @@ chrome.runtime.onMessage.addListener(function(mesg, sender , sendResponse){
         let setting_data = {};
 
         _bg.filter.keywords = mesg.data.keywords;
+        _bg.filter.items = {};
         _bg.crawler.mod.state = mesg.data.crawler_state;
         _bg.crawler.mod.period = mesg.data.crawler_period;
 

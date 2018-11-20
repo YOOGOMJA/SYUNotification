@@ -125,6 +125,7 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
             }
         },
         evt : {
+            
             // 모든 상태를 초기화하고 데이터를 가져온다
             reload : function(){
                 $s.mod.page.current = 1;
@@ -183,6 +184,10 @@ angular.module('popApp' , ['ngMaterial' , 'ngMessages'])
                         }
                     }
                 }
+            },
+            openOption : function(){
+                // chrome.tabs.create({ 'url': 'chrome://extensions/?options=' + chrome.runtime.id });
+                chrome.runtime.openOptionsPage();
             },
             openTab : function(item){
                 // $s.mod.history.push(item);
