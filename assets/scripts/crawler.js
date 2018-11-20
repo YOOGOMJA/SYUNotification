@@ -1,9 +1,18 @@
+/**
+* SYU Notification Crawler 2018.
+* 
+* @description SYU Notificatino Crawler Singleton
+* @author KyeongSoo Yoo
+* @exception jQuery is not exists.
+*/
 let _Crawler = (function(jQuery){
-    // 제목 , 작성자 , 작성일, 공지 여부 
+    // Crawler config 
+    // 주소 및 통신 방법 
     let config = {
         url : 'https://new.syu.ac.kr/academic/academic-notice/',
         ajax_method : 'GET'
     }
+    // Crawler Meta 데이터 
     let meta = {
         css : {
             root : '.md_notice_tbl',
@@ -19,11 +28,13 @@ let _Crawler = (function(jQuery){
             new : '.md_new',
             paging_area : '.md_pagingbx'
         },
+        // 실제 문장 쿼리스트링
         query : {
             cate : 't',
             type  : 'c',
             keyword : 'k'
         },
+        // 조회에 사용되는 옵션들 
         options : {
             cate : [
                 { text : '전체' , val : '' },
@@ -47,6 +58,13 @@ let _Crawler = (function(jQuery){
     }
 
     let fn = {
+        /** 
+         *  비동기 통신 부 
+         *
+         *  @param data.url 주소 (쿼리스트링 포함)
+         *  @param data.page 현재 페이지
+         *  @returns 최종 결과물 promise 
+         */
         get : function(data){
             let reqURL = '' + config.url;
             if(data.page && data.page !== '' ){ reqURL = reqURL + '/page/' + data.page; }
@@ -58,13 +76,21 @@ let _Crawler = (function(jQuery){
                 method : config.ajax_method
             });
         },
+        /** 
+         *  조회한 DOM요소를 parsing하는 함수
+         *
+         *  @param data 비동기 통신 dom
+         *  @returns promise 
+         */
         fetch : function(dom){
             mod.arr = [];
             mod.dom = jQuery(dom);
 
-            // DATA
+            // dom 요소를 가져옴
             mod.tbl = mod.dom.find(meta.css.root);
+            // promise를 위한 deferred 객체 생성
             let dfd = jQuery.Deferred();
+            // 데이터가 없는 경우에 실패 처리
             if(mod.tbl === '' || mod.tbl.length <= 0){
                 dfd.reject({
                     data : [],
@@ -73,15 +99,17 @@ let _Crawler = (function(jQuery){
                 });
             }
 
-
+            // tbody의 내용을 한 줄씩 읽는다.
             let rows = mod.tbl.find('tbody').children();
             rows.map(function(idx){
                 let row = rows.eq(idx);
                 let item = {};
+                // tbody의 내용이 없는 경우 빈채로 보냄
                 if(row.find(".step1").length <= 0){
                     mod.arr = [];
                 }
-                else{   
+                // tbody의 내용이 있는 경우
+                else{ 
                     // 1. NO
                     let no = row.find(meta.css.no_area);
                     if(no.find(meta.css.notice_icon).length > 0){
@@ -116,12 +144,11 @@ let _Crawler = (function(jQuery){
                     item.date = date.text().trim();
 
                     mod.arr.push(item);
-
                 }   
             });
 
-            
             // PAGING
+            // 페이징 정보가 페이지에 따로 있으므로 그걸 그대로 가져옴 
             mod.paging = {};
             mod.paging.data = [];
             mod.paging.last = 1;
@@ -153,6 +180,12 @@ let _Crawler = (function(jQuery){
             
             return dfd.promise();
         },
+        /** 
+         * 외부용 함수 
+         *
+         *  @param data 크롤링된 json 요소
+         *  @returns 최종 결과물 promise 
+         */
         load : function(data){
             // 1. get
             // 2. fetch
@@ -169,7 +202,18 @@ let _Crawler = (function(jQuery){
     }
 
     return {
-        // LOAD DATA FROM WEB
+        /** 
+         *  조회 함수
+         *  
+         *  @desc   비동기 통신 후 데이터를 파싱한다 
+         *          opt.cate : 조회 카테고리
+         *          opt.type : 조회 타입 
+         *          opt.keyword : 조회 키워드
+         *          opt.page : 현재 페이지
+         *          opt.forced : 강제 업데이트 여부 (background에서 사용)
+         *  @param opt 조회에 필요한 요소
+         *  @returns 최종 결과물 promise 
+         */
         load : function(opt){
             let _data = {};
             _data[meta.query.cate] = opt.cate;
@@ -180,12 +224,22 @@ let _Crawler = (function(jQuery){
 
             return fn.load(_data);
         },
+        /** 
+         *  데이터 가져오기 
+         *  
+         *  @desc 비동기 통신을 하지 않고 기존에 있는 데이터를 가져옴
+         *  @returns 크롤러가 가지고 있는 데이터들 
+         */
         get : function(){
             return {
                 data : mod.arr,
                 paging : mod.paging
             };
         },
+        /**
+         *  옵션 가져오기
+         *  조회에 필요한 요소들을 가져옴  
+         */
         opts : {
             cate : (function(){
                 return meta.options.cate;

@@ -1,6 +1,13 @@
+/**
+ * 쿼리스트링 조작용 객체 
+ * 
+ * @version 0.1.1
+ * @author KyeongSoo Yoo machun34@gmail.com
+ * @description 주소 요청에 필요한 쿼리스트링을 조작할 수 있는 객체
+ * @param {String} urlStr 조작할 url 본체 
+ * @returns {Object} 함수를 갖는 객체
+ */
 var QUERIES = QUERIES || function(urlStr){
-    
-
     var internal = {
         __QUERIES : -1,
         __LEN : 0,
@@ -67,19 +74,42 @@ var QUERIES = QUERIES || function(urlStr){
     internal.all();
 
     return {
-        // 쿼리스트링에 특정 키가 있는지 확인 (BOOL)
+        /**
+         * 소지 여부 
+         * 
+         * @description 현재 쿼리스트링이 해당 key를 갖는지 확인
+         * @param {String} key 확인할 키 
+         * @returns {boolean} 소지 여부
+         */
         has : function(key){
             return internal.has(key);
         },
-        // 쿼리스트링에서 특정 키로 값을 가져옴 (OBJECT)
+        /** 
+         * 키 값 가져오기
+         * 
+         * @description 쿼리스트링에서 특정 키로 값을 가져옴
+         * @param {String} key 가져올 키 
+         * @returns {Object} 데이터
+         */
         get : function(key){
             return internal.get(key)
         },
-        // 쿼리스트링의 모든 값들을 키=밸류 쌍의 객체로 반환(OBJECT)
+        /** 
+         * 변환
+         * 
+         * @description 쿼리스트링의 모든 값들을 키=밸류 쌍의 객체로 반환
+         * @returns {Object} 데이터
+         */
         all : function(){
             return internal.__QUERIES;
         },
-        // 넘겨받는 객체를 쿼리스트링 형태로 변환 (STRING)
+        /** 
+         * object -> string
+         * 
+         * @desc 넘겨받는 객체를 쿼리스트링 형태로 변환
+         * @param {Object} 키와 값 형태의 오브젝트 
+         * @returns {String} 주소용 쿼리스트링 형태 스트링
+         */
         gen : function(obj){
             return internal.gen(obj);
         },
