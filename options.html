@@ -36,6 +36,7 @@
             <div layout='row' layout-align='start center' layout-wrap class='row-container header'>
                 <div class='logo'></div>
                 <div class='title'><b>설정</b> - SYU Notification</div>
+                <md-button class="md-raised md-warn" style='margin-left:215px;' ng-click='fn.evt.pushTest()'>푸시 예시</md-button>
             </div>
             <div layout='row' layout-align='space-around center' layout-wrap class='row-container'>
                 <div flex='40'>
@@ -45,6 +46,7 @@
                 
                     <md-switch class="md-primary" name="crawler_state" ng-model="mod.crawler.state" aria-label='crawler_state'>
                     </md-switch>
+                    
                 </div>
             </div>
             <div layout='row' layout-align='space-around center' layout-wrap class='row-container period' >
@@ -64,10 +66,9 @@
                                     주기는 180보다 클 수 없습니다
                                 </div>
                             </div>
+                            
                         </md-input-container>
                     </form>
-                    
-                    
                 </div>
             </div>
             <div layout='row' layout-align='space-around center' layout-wrap class='row-container'>

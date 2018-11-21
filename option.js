@@ -69,6 +69,15 @@ angular.module('optApp' , ['ngMaterial' , 'ngMessages'])
                 }, function(){
                     // console.log('nah!');
                 });
+            },
+            pushTest : function(){
+                chrome.notifications.create({
+                    type : 'basic',
+                    iconUrl : '../assets/logo@128.png',
+                    // title : 'SYU Notification',
+                    title : '학사공지에 새로운 글이 올라왔습니다!',
+                    message : '2018년 학사지원센터 학석사연계과정.. 외 2건'
+                });
             }
         }
     };

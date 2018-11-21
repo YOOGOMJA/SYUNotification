@@ -1,7 +1,7 @@
 {
     "name": "SYUNotification",
     "description" : "삼육대학교 학사정보 알림",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "manifest_version": 3,
     "browser_action": {
         "default_popup": "popup.html",
