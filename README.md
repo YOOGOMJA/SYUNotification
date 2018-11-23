@@ -47,7 +47,7 @@
 
 ## 1. 예제
 
-![Alt text](https://github.com/YOOGOMJA/SYUNotification/blob/material/syunoti_demo.gif?raw=true "사용예제")
+![사용예제](https://github.com/YOOGOMJA/SYUNotification/blob/master/syunoti_demo.gif?raw=true)
 
 ## 2. 기능 
 ### 2.1 일반 목록 및 검색 
